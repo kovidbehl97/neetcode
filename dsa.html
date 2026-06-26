@@ -1,0 +1,1968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeetCode 150 — Master Patterns</title>
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Nunito:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    themeVariables: {
+      primaryColor: '#ffffff',        /* Matches new --surface */
+      primaryTextColor: '#0f172a',    /* Matches new --heading */
+      primaryBorderColor: '#94a3b8',  /* Matches new --border2 */
+      lineColor: '#64748b',           /* Matches new --muted */
+      textColor: '#0f172a',           
+      background: 'transparent'
+    }
+  });
+</script>
+<style>
+:root {
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --card: #f1f5f9;
+  --card2: #e2e8f0;
+  --border: #cbd5e1;
+  --border2: #94a3b8;
+  --text: #475569;
+  --heading: #0f172a;
+  --muted: #64748b;
+  --b1: #d97706;
+  --b2: #059669;
+  --floater: #0284c7;
+  --islands: #7c3aed;
+  --hash: #d97706;
+  --ptr: #2563eb;
+  --win: #9333ea;
+  --back: #dc2626;
+  --dp: #10b981;
+  --greed: #db2777;
+  --sort: #0284c7;
+  --heap: #ea580c;
+  --ll: #c026d3;
+  --tree: #16a34a;
+  --trie: #0891b2;
+  --stack: #e11d48;
+  --bsearch: #d97706;
+  --graph: #059669;
+  --interval: #ea580c;
+  --bits: #2563eb;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;display:flex;min-height:100vh;overflow-x:hidden}
+
+/* ---- SIDEBAR ---- */
+#sidebar{
+  width:230px;min-width:230px;background:var(--surface);
+  border-right:1px solid var(--border);height:100vh;position:sticky;top:0;
+  overflow-y:auto;padding:0 0 40px;z-index:100;
+  scrollbar-width:thin;scrollbar-color:var(--border) transparent;
+  flex-shrink:0;
+}
+#sidebar::-webkit-scrollbar{width:4px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.sidebar-logo{padding:20px 16px 16px;border-bottom:1px solid var(--border)}
+.sidebar-logo .logo-title{font-family:'Russo One',sans-serif;font-size:1rem;color:var(--heading);line-height:1.3}
+.sidebar-logo .logo-sub{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.15em;margin-top:3px}
+.nav-group{padding:12px 0 4px}
+.nav-group-label{font-size:0.6rem;text-transform:uppercase;letter-spacing:0.18em;font-weight:800;padding:4px 16px 6px;opacity:0.45;color:var(--heading)}
+.nav-item{display:flex;align-items:center;gap:8px;padding:5px 16px;text-decoration:none;color:var(--text);font-size:0.78rem;font-weight:600;border-left:2px solid transparent;cursor:pointer;transition:all 0.15s}
+.nav-item:hover{color:var(--heading);background:rgba(0,0,0,0.04);border-left-color:rgba(0,0,0,0.15)}
+.nav-item .nav-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;opacity:0.7}
+.nav-item.sub{padding-left:28px;font-size:0.73rem;font-weight:500}
+
+/* ---- MAIN ---- */
+#main{flex:1;overflow-y:auto;min-width:0}
+.section{padding:56px 60px;border-bottom:1px solid var(--border)}
+.section:last-child{border-bottom:none}
+
+/* ---- HERO ---- */
+#hero{padding:80px 60px 64px;background:radial-gradient(ellipse at 15% 60%,rgba(245,158,11,0.07) 0%,transparent 50%),radial-gradient(ellipse at 85% 20%,rgba(16,185,129,0.05) 0%,transparent 50%),radial-gradient(ellipse at 50% 100%,rgba(56,189,248,0.04) 0%,transparent 50%);border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+#hero::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(255,255,255,0.012) 40px,rgba(255,255,255,0.012) 41px),repeating-linear-gradient(90deg,transparent,transparent 40px,rgba(255,255,255,0.012) 40px,rgba(255,255,255,0.012) 41px);pointer-events:none}
+.hero-tag{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.3em;color:var(--b1);font-weight:800;margin-bottom:14px}
+.hero-title{font-family:'Russo One',sans-serif;font-size:3.8rem;color:var(--heading);line-height:1.05;margin-bottom:10px}
+.hero-title span{color:var(--b1)}
+.hero-sub{font-size:1rem;line-height:1.8;max-width:560px;margin-bottom:28px}
+.hero-chips{display:flex;flex-wrap:wrap;gap:10px}
+.hero-chip{padding:5px 14px;border-radius:100px;border:1px solid var(--border2);font-size:0.75rem;font-weight:700;color:var(--heading);background:var(--card)}
+
+/* ---- OVERVIEW ---- */
+.overview-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:28px}
+.zone-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;position:relative;overflow:hidden}
+.zone-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.zone-card.danger::before{background:linear-gradient(90deg,var(--b1),var(--back))}
+.zone-card.island::before{background:linear-gradient(90deg,var(--b2),var(--islands))}
+.zone-card-header{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.zone-card-emoji{font-size:1.5rem}
+.zone-card-title{font-family:'Russo One',sans-serif;font-size:1rem;color:var(--heading)}
+.zone-card-desc{font-size:0.78rem;line-height:1.6;margin-bottom:14px}
+.zone-items{display:flex;flex-direction:column;gap:7px}
+.zone-item{display:flex;align-items:flex-start;gap:9px;font-size:0.78rem;line-height:1.5}
+.zone-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:4px}
+
+/* ---- BATTLEGROUND HEADER ---- */
+.bg-header{display:flex;align-items:center;gap:16px;margin-bottom:8px}
+.bg-badge{font-size:0.6rem;text-transform:uppercase;letter-spacing:0.18em;font-weight:800;padding:4px 10px;border-radius:4px}
+.bg-title{font-family:'Russo One',sans-serif;font-size:2.2rem;color:var(--heading)}
+.bg-desc{font-size:0.88rem;line-height:1.8;max-width:680px;margin-bottom:44px}
+
+/* ---- SUBSECTION ---- */
+.subsection{margin-bottom:56px}
+.sub-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.sub-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.sub-title{font-family:'Russo One',sans-serif;font-size:1.4rem;color:var(--heading)}
+
+/* ---- PERSONA CARDS ---- */
+.personas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:18px;margin-bottom:36px}
+.persona-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:22px;position:relative;overflow:hidden;transition:border-color 0.2s,transform 0.2s}
+.persona-card:hover{border-color:var(--border2);transform:translateY(-1px)}
+.persona-card::after{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.persona-num{font-family:'Russo One',sans-serif;font-size:3.5rem;position:absolute;top:10px;right:16px;opacity:0.06;color:var(--heading);line-height:1}
+.persona-emoji{font-size:1.6rem;margin-bottom:10px}
+.persona-name{font-family:'Russo One',sans-serif;font-size:1.05rem;color:var(--heading);margin-bottom:14px}
+.persona-fields{display:flex;flex-direction:column;gap:10px}
+.pfield{display:flex;flex-direction:column;gap:3px}
+.pfield-label{font-size:0.6rem;text-transform:uppercase;letter-spacing:0.15em;font-weight:800;opacity:0.45}
+.pfield-value{font-size:0.82rem;line-height:1.55;color:var(--heading)}
+.pfield-code{font-family:'Fira Code',monospace;font-size:0.73rem;background:rgba(0,0,0,0.04);border-radius:6px;padding:8px 11px;color:#0369a1;white-space:pre;overflow-x:auto;border-left:2px solid}
+.kw-list{display:flex;flex-wrap:wrap;gap:5px;margin-top:3px}
+.kw{font-size:0.68rem;padding:2px 8px;border-radius:100px;background:rgba(0,0,0,0.04);border:1px solid rgba(0,0,0,0.08);color:var(--heading);font-weight:600}
+
+/* ---- CHEATSHEET ---- */
+.cheatsheet-wrap{margin-bottom:36px;overflow-x:auto}
+.cheatsheet-wrap h4{font-family:'Russo One',sans-serif;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.2em;margin-bottom:14px;opacity:0.5;color:var(--heading)}
+table{width:100%;border-collapse:collapse;font-size:0.8rem}
+th{text-align:left;padding:9px 14px;border-bottom:1px solid var(--border2);font-size:0.63rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);font-weight:800;white-space:nowrap}
+td{padding:9px 14px;border-bottom:1px solid rgba(0,0,0,0.05);color:var(--heading);line-height:1.5;vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(0,0,0,0.02)}
+td .kw{display:inline-block;margin:2px 2px}
+
+/* ---- VIZ PANEL ---- */
+.viz-panel{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:36px}
+.viz-panel-header{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.03)}
+.viz-panel-title{font-family:'Russo One',sans-serif;font-size:0.82rem;color:var(--heading);flex:1}
+.viz-tabs{display:flex;gap:5px;flex-wrap:wrap}
+.viz-tab{padding:5px 12px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--text);font-family:'Nunito',sans-serif;font-size:0.72rem;font-weight:700;cursor:pointer;transition:all 0.15s}
+.viz-tab:hover{border-color:rgba(0,0,0,0.2);color:var(--heading)}
+.viz-tab.active{color:#000;font-weight:800}
+.viz-body{padding:28px 24px;min-height:260px;display:flex;flex-direction:column;align-items:center;gap:18px}
+.array-row{display:flex;gap:6px;align-items:flex-end;flex-wrap:wrap;justify-content:center}
+.arr-cell{display:flex;flex-direction:column;align-items:center;gap:3px;position:relative}
+.arr-box{width:46px;height:46px;display:flex;align-items:center;justify-content:center;border:2px solid var(--border2);border-radius:8px;background:var(--surface);font-family:'Fira Code',monospace;font-size:0.95rem;font-weight:600;color:var(--heading);transition:all 0.35s;position:relative}
+.arr-idx{font-size:0.58rem;color:var(--muted);font-family:'Fira Code',monospace}
+.arr-ptr{font-size:0.65rem;font-weight:800;font-family:'Fira Code',monospace;height:18px;display:flex;align-items:center;justify-content:center}
+.arr-label{font-size:0.6rem;font-weight:800;position:absolute;top:-18px;left:50%;transform:translateX(-50%);white-space:nowrap;padding:2px 5px;border-radius:3px}
+.ds-box{background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:10px 16px;font-family:'Fira Code',monospace;font-size:0.78rem;color:var(--heading);min-width:200px;text-align:center;max-width:500px;flex-wrap:wrap;word-break:break-all}
+.ds-label{font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;opacity:0.5;display:block;margin-bottom:4px;font-family:'Nunito',sans-serif;font-weight:800}
+.viz-msg{font-size:0.82rem;line-height:1.6;text-align:center;max-width:520px;color:var(--heading);padding:10px 16px;background:rgba(0,0,0,0.03);border-radius:8px;border:1px solid var(--border)}
+.viz-step{font-size:0.68rem;opacity:0.45;font-family:'Fira Code',monospace}
+.viz-controls{display:flex;gap:10px;justify-content:center;align-items:center;padding:14px;border-top:1px solid var(--border);background:rgba(0,0,0,0.02)}
+.btn{padding:7px 18px;border-radius:7px;border:1px solid var(--border2);background:var(--surface);color:var(--heading);font-family:'Nunito',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.15s}
+.btn:hover{background:var(--card2);border-color:rgba(255,255,255,0.2)}
+.btn:disabled{opacity:0.3;cursor:not-allowed}
+
+
+
+/* --- Linear Flowchart Layout --- */
+.flowchart { display: flex; flex-direction: column; align-items: center; padding: 30px; gap: 20px; }
+.step-node { 
+    background: var(--surface); 
+    border: 2px solid var(--border2); 
+    padding: 15px 25px; 
+    border-radius: 8px; 
+    width: 280px; 
+    text-align: center; 
+    font-weight: 700; 
+    color: var(--heading); 
+    position: relative; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.step-node::after {
+    content: '↓';
+    position: absolute;
+    bottom: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--border2);
+    font-size: 20px;
+}
+.step-node.last::after { content: ''; }
+.path-yes { border-color: var(--b2); background: rgba(16,185,129,0.05); }
+.path-no { border-color: var(--back); background: rgba(248,113,113,0.05); }
+</style>
+</head>
+<body>
+
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-title">NeetCode 150<br>Master</div>
+    <div class="logo-sub">Pattern Recognition Guide</div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label">Overview</div>
+    <a class="nav-item" href="#overview"><span class="nav-dot" style="background:#94a3b8"></span>Danger Zones & Islands</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label" style="color:var(--b1)">⚔ Battleground 1</div>
+    <a class="nav-item" href="#hashing"><span class="nav-dot" style="background:var(--hash)"></span>Arrays & Hashing</a>
+    <a class="nav-item" href="#twoptr"><span class="nav-dot" style="background:var(--ptr)"></span>Two Pointers</a>
+    <a class="nav-item" href="#sliding"><span class="nav-dot" style="background:var(--win)"></span>Sliding Window</a>
+    <a class="nav-item" href="#tree1"><span class="nav-dot" style="background:var(--b1)"></span>Decision Tree</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label" style="color:var(--b2)">⚔ Battleground 2</div>
+    <a class="nav-item" href="#backtracking"><span class="nav-dot" style="background:var(--back)"></span>Backtracking</a>
+    <a class="nav-item" href="#dp"><span class="nav-dot" style="background:var(--dp)"></span>Dynamic Programming</a>
+    <a class="nav-item" href="#greedy"><span class="nav-dot" style="background:var(--greed)"></span>Greedy</a>
+    <a class="nav-item" href="#tree2"><span class="nav-dot" style="background:var(--b2)"></span>Decision Tree</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label" style="color:var(--floater)">◈ The Floater</div>
+    <a class="nav-item" href="#floater"><span class="nav-dot" style="background:var(--floater)"></span>Sorting vs Heap</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label" style="color:var(--islands)">🏝 The Islands</div>
+    <a class="nav-item sub" href="#linkedlist"><span class="nav-dot" style="background:var(--ll)"></span>Linked List</a>
+    <a class="nav-item sub" href="#trees"><span class="nav-dot" style="background:var(--tree)"></span>Trees</a>
+    <a class="nav-item sub" href="#tries"><span class="nav-dot" style="background:var(--trie)"></span>Tries</a>
+    <a class="nav-item sub" href="#stack"><span class="nav-dot" style="background:var(--stack)"></span>Stack</a>
+    <a class="nav-item sub" href="#bsearch"><span class="nav-dot" style="background:var(--bsearch)"></span>Binary Search</a>
+    <a class="nav-item sub" href="#graphs"><span class="nav-dot" style="background:var(--graph)"></span>Graphs</a>
+    <a class="nav-item sub" href="#intervals"><span class="nav-dot" style="background:var(--interval)"></span>Intervals</a>
+    <a class="nav-item sub" href="#mathbits"><span class="nav-dot" style="background:var(--bits)"></span>Math & Bits</a>
+  </div>
+</nav>
+
+<main id="main">
+
+<section id="hero">
+  <div class="hero-tag">NeetCode 150 · Pattern Recognition System</div>
+  <h1 class="hero-title">Master<br><span>Patterns</span></h1>
+  <p class="hero-sub">A complete tactical reference for recognizing and applying every algorithmic pattern. Personas, cheatsheets, interactive visualizations, and decision trees.</p>
+  <div class="hero-chips">
+    <span class="hero-chip" style="border-color:var(--b1);color:var(--b1)">⚔ Battleground 1</span>
+    <span class="hero-chip" style="border-color:var(--b2);color:var(--b2)">⚔ Battleground 2</span>
+    <span class="hero-chip" style="border-color:var(--floater);color:var(--floater)">◈ The Floater</span>
+    <span class="hero-chip" style="border-color:var(--islands);color:var(--islands)">🏝 8 Islands</span>
+  </div>
+</section>
+
+<section id="overview" class="section">
+  <div class="bg-header"><div class="bg-title" style="font-size:1.6rem">Pattern Map</div></div>
+  <p class="bg-desc">Every LeetCode problem falls into one of two categories: a <strong style="color:var(--b1)">Danger Zone</strong> where patterns look similar and you must choose carefully, or an <strong style="color:var(--b2)">Island</strong> with unmistakable structural clues.</p>
+  <div class="overview-grid">
+    <div class="zone-card danger">
+      <div class="zone-card-header"><span class="zone-card-emoji">🥊</span><span class="zone-card-title">The Danger Zones</span></div>
+      <p class="zone-card-desc">Patterns share structural similarities. You must actively decide between them based on constraints.</p>
+      <div class="zone-items">
+        <div class="zone-item"><span class="zone-dot" style="background:var(--b1)"></span><span><strong style="color:var(--heading)">Linear Scanners:</strong> Arrays &amp; Hashing vs. Two Pointers vs. Sliding Window</span></div>
+        <div class="zone-item"><span class="zone-dot" style="background:var(--back)"></span><span><strong style="color:var(--heading)">Decision Makers:</strong> Backtracking vs. 1-D DP vs. 2-D DP vs. Greedy</span></div>
+        <div class="zone-item"><span class="zone-dot" style="background:var(--floater)"></span><span><strong style="color:var(--heading)">The Floater:</strong> Sorting O(n log n) vs. Heap O(n log k) top-K</span></div>
+      </div>
+    </div>
+    <div class="zone-card island">
+      <div class="zone-card-header"><span class="zone-card-emoji">🏝️</span><span class="zone-card-title">The Islands</span></div>
+      <p class="zone-card-desc">Dead giveaways in the prompt. Unmistakable structures or explicit keywords.</p>
+      <div class="zone-items">
+        <div class="zone-item"><span class="zone-dot" style="background:var(--ll)"></span><span><strong style="color:var(--heading)">Linked List:</strong> Handed a ListNode (.next only)</span></div>
+        <div class="zone-item"><span class="zone-dot" style="background:var(--tree)"></span><span><strong style="color:var(--heading)">Trees:</strong> Handed a TreeNode (DFS/BFS)</span></div>
+        <div class="zone-item"><span class="zone-dot" style="background:var(--trie)"></span><span><strong style="color:var(--heading)">Tries:</strong> "Autocomplete" or "dictionary prefix"</span></div>
+        <div class="zone-item"><span class="zone-dot" style="background:var(--stack)"></span><span><strong style="color:var(--heading)">Stack:</strong> Matching brackets, LIFO, "next greater"</span></div>
+        <div class="zone-item"><span class="zone-dot" style="background:var(--bsearch)"></span><span><strong style="color:var(--heading)">Binary Search:</strong> Sorted array + O(log n) required</span></div>
+        <div class="zone-item"><span class="zone-dot" style="background:var(--graph)"></span><span><strong style="color:var(--heading)">Graphs:</strong> "Networks," "cities," "flight paths," "islands"</span></div>
+        <div class="zone-item"><span class="zone-dot" style="background:var(--interval)"></span><span><strong style="color:var(--heading)">Intervals:</strong> 2D arrays of [start, end] pairs</span></div>
+        <div class="zone-item"><span class="zone-dot" style="background:var(--bits)"></span><span><strong style="color:var(--heading)">Math &amp; Bits:</strong> Matrix rotations, XOR, binary shifts</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background:linear-gradient(180deg,rgba(245,158,11,0.03) 0%,transparent 100px)">
+  <div class="bg-header">
+    <div class="bg-badge" style="background:var(--b1);color:#000">Battleground 1</div>
+    <h2 class="bg-title">The Linear Scanners</h2>
+  </div>
+  <p class="bg-desc">These three patterns all process arrays or strings linearly. The key is asking the right questions about <em>what</em> you're looking for and <em>what constraints</em> you have.</p>
+
+  <div id="hashing" class="subsection">
+    <div class="sub-header"><span class="sub-dot" style="background:var(--hash)"></span><h3 class="sub-title" style="color:var(--hash)">Arrays & Hashing</h3></div>
+    <div id="hash-personas" class="personas-grid"></div>
+    <div class="cheatsheet-wrap"><h4>Cheatsheet</h4><table id="hash-table"></table></div>
+    <div class="viz-panel">
+      <div class="viz-panel-header">
+        <span class="viz-panel-title">🔬 Interactive Visualization</span>
+        <div class="viz-tabs" id="hash-viz-tabs"></div>
+      </div>
+      <div class="viz-body" id="hash-viz-body"><div class="viz-msg">Select a persona tab above.</div></div>
+      <div class="viz-controls">
+        <button class="btn" id="hash-prev" onclick="hashNav(-1)" disabled>◀ Prev</button>
+        <span class="viz-step" id="hash-step">—</span>
+        <button class="btn" id="hash-next" onclick="hashNav(1)" disabled>Next ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="twoptr" class="subsection">
+    <div class="sub-header"><span class="sub-dot" style="background:var(--ptr)"></span><h3 class="sub-title" style="color:var(--ptr)">Two Pointers</h3></div>
+    <div id="ptr-personas" class="personas-grid"></div>
+    <div class="cheatsheet-wrap"><h4>Cheatsheet</h4><table id="ptr-table"></table></div>
+    <div class="viz-panel">
+      <div class="viz-panel-header">
+        <span class="viz-panel-title">🔬 Interactive Visualization</span>
+        <div class="viz-tabs" id="ptr-viz-tabs"></div>
+      </div>
+      <div class="viz-body" id="ptr-viz-body"><div class="viz-msg">Select a persona tab above.</div></div>
+      <div class="viz-controls">
+        <button class="btn" id="ptr-prev" onclick="ptrNav(-1)" disabled>◀ Prev</button>
+        <span class="viz-step" id="ptr-step">—</span>
+        <button class="btn" id="ptr-next" onclick="ptrNav(1)" disabled>Next ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="sliding" class="subsection">
+    <div class="sub-header"><span class="sub-dot" style="background:var(--win)"></span><h3 class="sub-title" style="color:var(--win)">Sliding Window</h3></div>
+    <div id="win-personas" class="personas-grid"></div>
+    <div class="cheatsheet-wrap"><h4>Cheatsheet</h4><table id="win-table"></table></div>
+    <div class="viz-panel">
+      <div class="viz-panel-header">
+        <span class="viz-panel-title">🔬 Interactive Visualization</span>
+        <div class="viz-tabs" id="win-viz-tabs"></div>
+      </div>
+      <div class="viz-body" id="win-viz-body"><div class="viz-msg">Select a persona tab above.</div></div>
+      <div class="viz-controls">
+        <button class="btn" id="win-prev" onclick="winNav(-1)" disabled>◀ Prev</button>
+        <span class="viz-step" id="win-step">—</span>
+        <button class="btn" id="win-next" onclick="winNav(1)" disabled>Next ▶</button>
+      </div>
+    </div>
+  </div>
+  <div id="tree1" class="sub-header"><span class="sub-dot" style="background:var(--b2)"></span><h3 class="sub-title" style="color:var(--b2)">Battleground 1 — Decision Tree</h3></div>
+<div  class="viz-panel" style="margin-bottom:0">
+    
+    <div class="idt-panel">
+      <div class="mermaid" style="display: flex; justify-content: center;">
+        graph TD
+            A["1. Continuous Chunk?"] -->|No| C["2. Array Sorted?"]
+            A -->|Yes| B["Sliding Window"]
+            
+            C -->|Yes| D["Two Pointers"]
+            C -->|No| E["3. Need Indices?"]
+            
+            E -->|No| G["4. O(1) Space?"]
+            E -->|Yes| F["Hashing"]
+            
+            G -->|Yes| D
+            G -->|No| F
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<section class="section" style="background:linear-gradient(180deg,rgba(16,185,129,0.03) 0%,transparent 100px)">
+  <div class="bg-header">
+    <div class="bg-badge" style="background:var(--b2);color:#000">Battleground 2</div>
+    <h2 class="bg-title">Decision Makers &amp; Optimization</h2>
+  </div>
+  <p class="bg-desc">All four patterns here solve optimization problems, but they differ in <em>scope</em>. Greedy is fast and local. DP is thorough and cached. Backtracking is exhaustive.</p>
+
+  <div id="backtracking" class="subsection">
+    <div class="sub-header"><span class="sub-dot" style="background:var(--back)"></span><h3 class="sub-title" style="color:var(--back)">Backtracking</h3></div>
+    <div id="back-personas" class="personas-grid"></div>
+    <div class="cheatsheet-wrap"><h4>Cheatsheet</h4><table id="back-table"></table></div>
+    <div class="viz-panel">
+      <div class="viz-panel-header"><span class="viz-panel-title">🔬 Backtracking — Permutations of [1,2,3]</span></div>
+      <div class="viz-body" id="back-viz-body" style="min-height:320px"></div>
+      <div class="viz-controls">
+        <button class="btn" id="back-prev" onclick="backNav(-1)" disabled>◀ Prev</button>
+        <span class="viz-step" id="back-step">—</span>
+        <button class="btn" id="back-next" onclick="backNav(1)">Next ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="dp" class="subsection">
+    <div class="sub-header"><span class="sub-dot" style="background:var(--dp)"></span><h3 class="sub-title" style="color:var(--dp)">Dynamic Programming</h3></div>
+    <div id="dp-personas" class="personas-grid"></div>
+    <div class="cheatsheet-wrap"><h4>Cheatsheet</h4><table id="dp-table-el"></table></div>
+    <div class="viz-panel">
+      <div class="viz-panel-header">
+        <span class="viz-panel-title">🔬 DP Visualization</span>
+        <div class="viz-tabs" id="dp-viz-tabs"></div>
+      </div>
+      <div class="viz-body" id="dp-viz-body"></div>
+      <div class="viz-controls">
+        <button class="btn" id="dp-prev" onclick="dpNav(-1)" disabled>◀ Prev</button>
+        <span class="viz-step" id="dp-step">—</span>
+        <button class="btn" id="dp-next" onclick="dpNav(1)">Next ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="greedy" class="subsection">
+    <div class="sub-header"><span class="sub-dot" style="background:var(--greed)"></span><h3 class="sub-title" style="color:var(--greed)">Greedy</h3></div>
+    <div id="greed-personas" class="personas-grid"></div>
+    <div class="cheatsheet-wrap"><h4>Cheatsheet</h4><table id="greed-table"></table></div>
+    <div class="viz-panel">
+      <div class="viz-panel-header"><span class="viz-panel-title">🔬 Greedy — Max Stock Profit [7,1,5,3,6,4]</span></div>
+      <div class="viz-body" id="greed-viz-body"></div>
+      <div class="viz-controls">
+        <button class="btn" id="greed-prev" onclick="greedNav(-1)" disabled>◀ Prev</button>
+        <span class="viz-step" id="greed-step">—</span>
+        <button class="btn" id="greed-next" onclick="greedNav(1)">Next ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="tree2" class="sub-header"><span class="sub-dot" style="background:var(--b2)"></span><h3 class="sub-title" style="color:var(--b2)">Battleground 2 — Decision Tree</h3></div>
+<div  class="viz-panel" style="margin-bottom:0">
+    
+    <div class="idt-panel">
+      <div class="mermaid" style="display: flex; justify-content: center;">
+        graph TD
+          Q1["Need All Results Test: all combinations"]
+          Q1 -->|Yes| R1["Backtracking"]
+          Q1 -->|No| Q2["Best immediate choice = best final score?"]
+          Q2 -->|Yes| R2["Greedy"]
+          Q2 -->|No| Q3["Do immediate choices depend on future states?"]
+          Q3 -->|Yes| R3["Dynamic Programming (1-D or 2-D)"]
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="floater" class="section" style="background:linear-gradient(180deg,rgba(56,189,248,0.03) 0%,transparent 100px)">
+  <div class="bg-header">
+    <div class="bg-badge" style="background:var(--floater);color:#000">The Floater</div>
+    <h2 class="bg-title" style="color:var(--floater)">Sorting vs. Heap</h2>
+  </div>
+  <p class="bg-desc">Both sort things, but for very different reasons. The key question: do you need <em>everything</em> ordered (Sort), or just the <em>top K</em> (Heap)?</p>
+  <div id="floater-personas" class="personas-grid"></div>
+  <div class="cheatsheet-wrap"><h4>Cheatsheet</h4><table id="floater-table"></table></div>
+  <div class="viz-panel">
+    <div class="viz-panel-header">
+      <span class="viz-panel-title">🔬 Sorting vs Heap — Array: [3,2,1,5,6,4], K=3</span>
+      <div class="viz-tabs" id="floater-viz-tabs"></div>
+    </div>
+    <div class="viz-body" id="floater-viz-body"></div>
+    <div class="viz-controls">
+      <button class="btn" id="floater-prev" onclick="floaterNav(-1)" disabled>◀ Prev</button>
+      <span class="viz-step" id="floater-step">—</span>
+      <button class="btn" id="floater-next" onclick="floaterNav(1)">Next ▶</button>
+    </div>
+  </div>
+  <div id="tree3" class="sub-header"><span class="sub-dot" style="background:var(--b2)"></span><h3 class="sub-title" style="color:var(--b2)">Heap vs Sorting - Decision Tree</h3></div>
+<div  class="viz-panel" style="margin-bottom:0">
+    
+    <div class="idt-panel">
+      <div class="mermaid" style="display: flex; justify-content: center;">
+        graph TD
+          A[1. Need ALL elements in sorted order?] -->|Yes| B[Array Sort O n log n]
+          A -->|No| C[2. Asking for TOP K or BOTTOM K elements?]
+          C -->|No| D[Default to Array Sort]
+          C -->|Yes| E[3. Is K much smaller than N? or streaming data?]
+          E -->|Yes| F[Heap / Priority Queue]
+          E -->|No| G[Array Sort and slice Top K]
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background:linear-gradient(180deg,rgba(167,139,250,0.03) 0%,transparent 100px)">
+  <div class="bg-header">
+    <div class="bg-badge" style="background:var(--islands);color:#000">The Islands</div>
+    <h2 class="bg-title" style="color:var(--islands)">Isolated Topics</h2>
+  </div>
+  <p class="bg-desc">These patterns have unmistakable structural giveaways. When you see the dead giveaway, there's no deliberation.</p>
+
+  <div id="linkedlist" class="subsection">
+    <div class="sub-header"><span class="sub-dot" style="background:var(--ll)"></span><h3 class="sub-title" style="color:var(--ll)">Linked List</h3></div>
+    <div id="ll-personas" class="personas-grid"></div>
+    <div class="cheatsheet-wrap"><h4>Cheatsheet</h4><table id="ll-table"></table></div>
+    <div class="viz-panel">
+      <div class="viz-panel-header">
+        <span class="viz-panel-title">🔬 Linked List Visualization</span>
+        <div class="viz-tabs" id="ll-viz-tabs"></div>
+      </div>
+      <div class="viz-body" id="ll-viz-body"></div>
+      <div class="viz-controls">
+        <button class="btn" id="ll-prev" onclick="islandNav('ll',-1)" disabled>◀ Prev</button>
+        <span class="viz-step" id="ll-step">—</span>
+        <button class="btn" id="ll-next" onclick="islandNav('ll',1)">Next ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="trees" class="subsection">
+    <div class="sub-header"><span class="sub-dot" style="background:var(--tree)"></span><h3 class="sub-title" style="color:var(--tree)">Trees</h3></div>
+    <div id="trees-personas" class="personas-grid"></div>
+    <div class="cheatsheet-wrap"><h4>Cheatsheet</h4><table id="trees-table"></table></div>
+    <div class="viz-panel">
+      <div class="viz-panel-header">
+        <span class="viz-panel-title">🔬 Trees — DFS/BFS Traversal</span>
+        <div class="viz-tabs" id="trees-viz-tabs"></div>
+      </div>
+      <div class="viz-body" id="trees-viz-body" style="min-height:300px"></div>
+      <div class="viz-controls">
+        <button class="btn" id="trees-prev" onclick="islandNav('trees',-1)" disabled>◀ Prev</button>
+        <span class="viz-step" id="trees-step">—</span>
+        <button class="btn" id="trees-next" onclick="islandNav('trees',1)">Next ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="tries" class="subsection">
+    <div class="sub-header"><span class="sub-dot" style="background:var(--trie)"></span><h3 class="sub-title" style="color:var(--trie)">Tries</h3></div>
+    <div id="tries-personas" class="personas-grid"></div>
+    <div class="cheatsheet-wrap"><h4>Cheatsheet</h4><table id="tries-table"></table></div>
+    <div class="viz-panel">
+      <div class="viz-panel-header"><span class="viz-panel-title">🔬 Trie — Insert "cat", "car", "dog"</span></div>
+      <div class="viz-body" id="tries-viz-body" style="min-height:280px"></div>
+      <div class="viz-controls">
+        <button class="btn" id="tries-prev" onclick="islandNav('tries',-1)" disabled>◀ Prev</button>
+        <span class="viz-step" id="tries-step">—</span>
+        <button class="btn" id="tries-next" onclick="islandNav('tries',1)">Next ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="stack" class="subsection">
+    <div class="sub-header"><span class="sub-dot" style="background:var(--stack)"></span><h3 class="sub-title" style="color:var(--stack)">Stack</h3></div>
+    <div id="stack-personas" class="personas-grid"></div>
+    <div class="cheatsheet-wrap"><h4>Cheatsheet</h4><table id="stack-table"></table></div>
+    <div class="viz-panel">
+      <div class="viz-panel-header"><span class="viz-panel-title">🔬 Stack — Valid Parentheses: "({[]})"</span></div>
+      <div class="viz-body" id="stack-viz-body"></div>
+      <div class="viz-controls">
+        <button class="btn" id="stack-prev" onclick="islandNav('stack',-1)" disabled>◀ Prev</button>
+        <span class="viz-step" id="stack-step">—</span>
+        <button class="btn" id="stack-next" onclick="islandNav('stack',1)">Next ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="bsearch" class="subsection">
+    <div class="sub-header"><span class="sub-dot" style="background:var(--bsearch)"></span><h3 class="sub-title" style="color:var(--bsearch)">Binary Search</h3></div>
+    <div id="bs-personas" class="personas-grid"></div>
+    <div class="cheatsheet-wrap"><h4>Cheatsheet</h4><table id="bs-table"></table></div>
+    <div class="viz-panel">
+      <div class="viz-panel-header">
+        <span class="viz-panel-title">🔬 Binary Search</span>
+        <div class="viz-tabs" id="bs-viz-tabs"></div>
+      </div>
+      <div class="viz-body" id="bs-viz-body"></div>
+      <div class="viz-controls">
+        <button class="btn" id="bs-prev" onclick="islandNav('bs',-1)" disabled>◀ Prev</button>
+        <span class="viz-step" id="bs-step">—</span>
+        <button class="btn" id="bs-next" onclick="islandNav('bs',1)">Next ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="graphs" class="subsection">
+    <div class="sub-header"><span class="sub-dot" style="background:var(--graph)"></span><h3 class="sub-title" style="color:var(--graph)">Graphs / Advanced Graphs</h3></div>
+    <div id="graph-personas" class="personas-grid"></div>
+    <div class="cheatsheet-wrap"><h4>Cheatsheet</h4><table id="graph-table"></table></div>
+    <div class="viz-panel">
+      <div class="viz-panel-header">
+        <span class="viz-panel-title">🔬 Graphs — BFS/DFS</span>
+        <div class="viz-tabs" id="graph-viz-tabs"></div>
+      </div>
+      <div class="viz-body" id="graph-viz-body" style="min-height:300px"></div>
+      <div class="viz-controls">
+        <button class="btn" id="graph-prev" onclick="islandNav('graph',-1)" disabled>◀ Prev</button>
+        <span class="viz-step" id="graph-step">—</span>
+        <button class="btn" id="graph-next" onclick="islandNav('graph',1)">Next ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="intervals" class="subsection">
+    <div class="sub-header"><span class="sub-dot" style="background:var(--interval)"></span><h3 class="sub-title" style="color:var(--interval)">Intervals</h3></div>
+    <div id="interval-personas" class="personas-grid"></div>
+    <div class="cheatsheet-wrap"><h4>Cheatsheet</h4><table id="interval-table"></table></div>
+    <div class="viz-panel">
+      <div class="viz-panel-header"><span class="viz-panel-title">🔬 Intervals — Merge [[1,3],[2,6],[8,10],[15,18]]</span></div>
+      <div class="viz-body" id="interval-viz-body"></div>
+      <div class="viz-controls">
+        <button class="btn" id="interval-prev" onclick="islandNav('interval',-1)" disabled>◀ Prev</button>
+        <span class="viz-step" id="interval-step">—</span>
+        <button class="btn" id="interval-next" onclick="islandNav('interval',1)">Next ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mathbits" class="subsection">
+    <div class="sub-header"><span class="sub-dot" style="background:var(--bits)"></span><h3 class="sub-title" style="color:var(--bits)">Math &amp; Geometry / Bit Manipulation</h3></div>
+    <div id="bits-personas" class="personas-grid"></div>
+    <div class="cheatsheet-wrap"><h4>Cheatsheet</h4><table id="bits-table"></table></div>
+    <div class="viz-panel">
+      <div class="viz-panel-header">
+        <span class="viz-panel-title">🔬 Bit Manipulation</span>
+        <div class="viz-tabs" id="bits-viz-tabs"></div>
+      </div>
+      <div class="viz-body" id="bits-viz-body"></div>
+      <div class="viz-controls">
+        <button class="btn" id="bits-prev" onclick="islandNav('bits',-1)" disabled>◀ Prev</button>
+        <span class="viz-step" id="bits-step">—</span>
+        <button class="btn" id="bits-next" onclick="islandNav('bits',1)">Next ▶</button>
+      </div>
+    </div>
+  </div>
+
+</section>
+</main>
+
+<script>
+// ============================================================
+//   COLORS
+// ============================================================
+const C = {
+  bg:'#f8fafc',surface:'#ffffff',card:'#f1f5f9',card2:'#e2e8f0',
+  border:'#cbd5e1',border2:'#94a3b8',text:'#475569',heading:'#0f172a',muted:'#64748b',
+  hash:'#d97706',ptr:'#2563eb',win:'#9333ea',back:'#dc2626',dp:'#10b981',
+  greed:'#db2777',sort:'#0284c7',heap:'#ea580c',ll:'#c026d3',tree:'#16a34a',
+  trie:'#0891b2',stack:'#e11d48',bsearch:'#d97706',graph:'#059669',
+  interval:'#ea580c',bits:'#2563eb',b1:'#d97706',b2:'#059669',floater:'#0284c7',
+  ok:'rgba(16,185,129,0.25)',warn:'rgba(248,113,113,0.25)',hi:'rgba(251,191,36,0.25)',
+  blue:'rgba(96,165,250,0.25)',purple:'rgba(192,132,252,0.25)',islands:'#7c3aed',
+  ok_b:'#10b981',warn_b:'#dc2626',hi_b:'#d97706',blue_b:'#2563eb',purple_b:'#9333ea'
+};
+
+// ============================================================
+//   HELPERS
+// ============================================================
+function cell(val,{bg='',bc='',tc='',label='',ptr='',pcolor='',bold=false}={}){
+  const boxStyle=`background:${bg||C.surface};border-color:${bc||C.border2};color:${tc||C.heading};${bold?'font-weight:800;':''}border:2px solid ${bc||C.border2};`;
+  const lbl=label?`<div class="arr-label" style="background:${pcolor||C.border2};color:${pcolor?'#000':C.heading}">${label}</div>`:'';
+  const p=ptr?`<div class="arr-ptr" style="color:${pcolor||C.heading}">${ptr}</div>`:'<div class="arr-ptr"></div>';
+  return `<div class="arr-cell">${p}<div class="arr-box" style="${boxStyle}">${lbl}${val}</div><div class="arr-idx"></div></div>`;
+}
+function cellIdx(val,idx,opts={}){
+  return cell(val,opts).replace('<div class="arr-idx"></div>',`<div class="arr-idx">[${idx}]</div>`);
+}
+function arrRow(cells){return `<div class="array-row">${cells}</div>`}
+function ds(label,content,color=''){return `<div class="ds-box"><span class="ds-label" style="color:${color||C.muted}">${label}</span>${content}</div>`}
+function msg(text){return `<div class="viz-msg">${text}</div>`}
+function setStr(s){return s.size===0?'∅':[...s].join(', ')}
+
+// ============================================================
+//   PERSONA RENDERER
+// ============================================================
+function renderPersonas(containerId, personas, color){
+  const el=document.getElementById(containerId);
+  if(!el)return;
+  el.innerHTML=personas.map((p,i)=>`
+    <div class="persona-card" style="border-left:3px solid ${color}">
+      <div class="persona-num">${i+1}</div>
+      <div class="persona-emoji">${p.emoji}</div>
+      <div class="persona-name">${p.name}</div>
+      <div class="persona-fields">
+        <div class="pfield"><span class="pfield-label">Real Life</span><span class="pfield-value">${p.realLife}</span></div>
+        <div class="pfield"><span class="pfield-label">Technical Name</span><span class="pfield-value" style="color:${color};font-weight:700">${p.technical}</span></div>
+        <div class="pfield"><span class="pfield-label">Code Translation</span><pre class="pfield-code" style="border-color:${color}">${p.code}</pre></div>
+        <div class="pfield"><span class="pfield-label">When to Use</span><span class="pfield-value">${p.when}</span></div>
+        <div class="pfield"><span class="pfield-label">Keywords</span><div class="kw-list">${p.keywords.map(k=>`<span class="kw">${k}</span>`).join('')}</div></div>
+        ${p.ds?`<div class="pfield"><span class="pfield-label">Data Structure</span><span class="pfield-value" style="font-family:'Fira Code',monospace;font-size:0.8rem;color:${color}">${p.ds}</span></div>`:''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderTable(id, headers, rows){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.innerHTML=`<thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${
+    rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')
+  }</tbody>`;
+}
+
+// ============================================================
+//   PERSONA DATA
+// ============================================================
+const HASH_PERSONAS=[
+  {emoji:'🛡️',name:'The Bouncer',technical:'Uniqueness / Visited States',
+  realLife:"A bouncer at a club checking IDs. They don't need to know anything else — just instantly know if you're on the VIP list or if they already let you in.",
+  code:`const seen = new Set();\nfor (const item of arr) {\n  if (seen.has(item)) return true;\n  seen.add(item);\n}\nreturn false;`,
+  when:"You need to instantly know if you've encountered an element or state before.",
+  keywords:['Distinct','contains duplicate','longest consecutive','unique','cycle'],ds:'Hash Set'},
+  {emoji:'💵',name:'The Cash Register',technical:'Frequency Counter',
+  realLife:"Counting how many 1-dollar, 5-dollar, and 20-dollar bills you have in the register.",
+  code:`const freq = new Map();\nfor (const item of arr) {\n  freq.set(item, (freq.get(item)||0) + 1);\n}`,
+  when:"You need to tally occurrences to find the most common item, or check if two collections have the same contents.",
+  keywords:['Most frequent','anagram','majority element','appears exactly K times'],ds:'Hash Map'},
+  {emoji:'🧩',name:'The Matchmaker',technical:'Complements / Exact Pairing',
+  realLife:"You have a puzzle piece and know exactly what shape the missing piece needs to be. Has anyone brought that piece?",
+  code:`const map = new Map();\nfor (let i = 0; i < arr.length; i++) {\n  const complement = target - arr[i];\n  if (map.has(complement)) return [map.get(complement), i];\n  map.set(arr[i], i);\n}`,
+  when:"You are looking for two elements that satisfy a specific mathematical relationship.",
+  keywords:['Two sum','difference of K','pairs that add up to'],ds:'Hash Map'},
+  {emoji:'📬',name:'The Mailroom',technical:'Grouping / Categorization',
+  realLife:"Sorting a massive pile of mail into cubbies based on apartment number.",
+  code:`const groups = new Map();\nfor (const word of words) {\n  const key = word.split('').sort().join('');\n  if (!groups.has(key)) groups.set(key, []);\n  groups.get(key).push(word);\n}`,
+  when:"You have a messy list of items and need to bundle ones that share a core trait.",
+  keywords:['Group','group anagrams','shift strings'],ds:'Hash Map (Values = Arrays)'},
+  {emoji:'📝',name:'The Cheat Sheet',technical:'Caching / Memoization',
+  realLife:"Taking a math test. Question 10 is the same as question 1, which you already solved. Look at your scratch paper instead of recalculating.",
+  code:`const memo = new Map();\nfunction fib(n) {\n  if (memo.has(n)) return memo.get(n);\n  const result = fib(n-1) + fib(n-2);\n  memo.set(n, result);\n  return result;\n}`,
+  when:"Your recursion is too slow because it keeps solving the exact same sub-problems.",
+  keywords:['Optimize','Time Limit Exceeded','overlapping subproblems'],ds:'Hash Map'},
+  {emoji:'📞',name:'The Phonebook',technical:'Graph Adjacency List',
+  realLife:"You want to know who Bob is connected to. Look up Bob in your contacts and see a list of his connections.",
+  code:`const adj = new Map();\nfor (const [a, b] of edges) {\n  if (!adj.has(a)) adj.set(a, []);\n  if (!adj.has(b)) adj.set(b, []);\n  adj.get(a).push(b);\n  adj.get(b).push(a);\n}`,
+  when:"You need to map out a network — flight paths, class prerequisites, followers.",
+  keywords:['Network','graph','flight paths','connected nodes'],ds:'Hash Map (Values = Arrays)'}
+];
+
+const PTR_PERSONAS=[
+  {emoji:'📚',name:'The Bookends',technical:'Left/Right Pointers (Inward)',
+  realLife:"You and a friend search a bookshelf. You start at the far left, they start at the far right, and walk toward each other.",
+  code:`let left = 0, right = arr.length - 1;\nwhile (left < right) {\n  const sum = arr[left] + arr[right];\n  if (sum === target) return [left, right];\n  else if (sum < target) left++;\n  else right--;\n}`,
+  when:"Searching a sorted array for a pair, or checking if a sequence is symmetrical.",
+  keywords:['Sorted array','palindrome','Two Sum II','most water'],ds:'Two index variables on same array'},
+  {emoji:'👷',name:'The Foreman & Worker',technical:'Read/Write Pointers (Same Direction)',
+  realLife:"A worker scans boxes on a belt. Good items go to the Foreman, who places them in the next available slot on the shelf.",
+  code:`let slow = 0;\nfor (let fast = 0; fast < arr.length; fast++) {\n  if (arr[fast] !== 0) {\n    arr[slow] = arr[fast];\n    slow++;\n  }\n}`,
+  when:"You must modify an array in-place to filter or rearrange without extra memory.",
+  keywords:['In-place','remove duplicates','move zeroes'],ds:'Two index variables on same array'},
+  {emoji:'🤐',name:'The Zipper',technical:'Merging Arrays',
+  realLife:"Zipping a jacket — teeth on both sides interleave perfectly into a single track.",
+  code:`let a = 0, b = 0;\nconst result = [];\nwhile (a < arr1.length && b < arr2.length) {\n  if (arr1[a] < arr2[b]) result.push(arr1[a++]);\n  else result.push(arr2[b++]);\n}\nresult.push(...arr1.slice(a), ...arr2.slice(b));`,
+  when:"You need to combine two sorted arrays into one, or find their intersection.",
+  keywords:['Merge','two sorted arrays','intersection'],ds:'One pointer per array'},
+  {emoji:'🏃',name:'The Track Stars',technical:'Fast/Slow Pointers (Cycle Detection)',
+  realLife:"A fast runner and slow runner do laps on a circular track. The fast runner will eventually lap the slow one.",
+  code:`let slow = head, fast = head;\nwhile (fast && fast.next) {\n  slow = slow.next;\n  fast = fast.next.next;\n  if (slow === fast) return true;\n}\nreturn false;`,
+  when:"You need to find the middle of a Linked List or detect an infinite loop.",
+  keywords:['Middle element','cycle','infinite loop','linked list'],ds:'Two pointers at different speeds'}
+];
+
+const WIN_PERSONAS=[
+  {emoji:'🖼️',name:'The Picture Frame',technical:'Fixed-Size Window',
+  realLife:"You have a panoramic photo and a rigid frame that fits exactly 3 people. Slide it one inch at a time — one person enters, one falls out.",
+  code:`let sum = 0;\nfor (let i = 0; i < k; i++) sum += arr[i];\nlet maxSum = sum;\nfor (let i = k; i < arr.length; i++) {\n  sum += arr[i] - arr[i-k];\n  maxSum = Math.max(maxSum, sum);\n}`,
+  when:"The prompt explicitly gives you a locked size constraint.",
+  keywords:['Subarray of size K','substring of length K','max sum of K consecutive'],ds:'Left+Right, distance locked to K'},
+  {emoji:'🐛',name:'The Inchworm',technical:'Variable Window (Maximize)',
+  realLife:"A caterpillar stretches its head as far forward as it can to eat. If it hits a bad leaf, it stops and pulls its tail forward.",
+  code:`let left = 0, maxLen = 0;\nconst seen = new Set();\nfor (let right = 0; right < s.length; right++) {\n  while (seen.has(s[right])) {\n    seen.delete(s[left++]);\n  }\n  seen.add(s[right]);\n  maxLen = Math.max(maxLen, right - left + 1);\n}`,
+  when:"You need the biggest/longest continuous chunk that satisfies a rule.",
+  keywords:['Longest substring','maximum consecutive','without repeating characters'],ds:'Left+Right, expand right, shrink left'},
+  {emoji:'🧳',name:'The Minimalist',technical:'Variable Window (Minimize)',
+  realLife:"At a buffet with a grocery list. Shovel food on (expand right) until you have everything. Then throw off the back (shrink left) to make the tray as small as possible.",
+  code:`let left = 0, minLen = Infinity, formed = 0;\nconst need = {}, have = {};\nfor (const c of t) need[c] = (need[c]||0)+1;\nfor (let right = 0; right < s.length; right++) {\n  have[s[right]] = (have[s[right]]||0)+1;\n  if (need[s[right]] && have[s[right]]===need[s[right]]) formed++;\n  while (formed === Object.keys(need).length) {\n    minLen = Math.min(minLen, right-left+1);\n    // shrink left...\n  }\n}`,
+  when:"You need the smallest/shortest chunk that satisfies a target.",
+  keywords:['Minimum window substring','shortest subarray with sum >= target'],ds:'Left+Right, expand right, aggressively shrink left'}
+];
+
+const BACK_PERSONAS=[
+  {emoji:'🗺️',name:'The Explorer',technical:'Backtracking / DFS Exhaustive Search',
+  realLife:"You're in a maze. Map out a path until you hit a dead end, walk back to the last intersection, and try the next path.",
+  code:`function backtrack(path, choices) {\n  if (isComplete(path)) {\n    results.push([...path]);\n    return;\n  }\n  for (const choice of choices) {\n    path.push(choice);          // CHOOSE\n    backtrack(path, remaining); // EXPLORE\n    path.pop();                 // UN-CHOOSE\n  }\n}`,
+  when:'The prompt asks for "All possible permutations/combinations/paths/subsets."',
+  keywords:['All possible','permutations','combinations','subsets','generate all'],ds:'Recursion + path array'}
+];
+
+const DP_PERSONAS=[
+  {emoji:'🧠',name:'The Cacher',technical:'1-D Dynamic Programming',
+  realLife:"You're doing a math worksheet where half the questions are repeats. Write answers down so you never calculate the same thing twice.",
+  code:`const dp = new Array(n+1).fill(0);\ndp[0]=0; dp[1]=1;\nfor(let i=2;i<=n;i++) dp[i]=dp[i-1]+dp[i-2];\nreturn dp[n];`,
+  when:'The prompt asks for "Maximum/Minimum/Total ways" and a choice now affects future choices.',
+  keywords:['Maximum','minimum','total ways','fewest','count paths','climbing stairs','house robber'],ds:'1D array (the cache)'},
+  {emoji:'📐',name:'The Grid Walker',technical:'2-D Dynamic Programming',
+  realLife:"Filling a crossword puzzle: each square's answer depends on the squares above and to its left. Fill row by row.",
+  code:`const dp = Array(m+1).fill(null).map(()=>Array(n+1).fill(0));\nfor(let i=1;i<=m;i++)\n  for(let j=1;j<=n;j++)\n    dp[i][j]=s1[i-1]===s2[j-1]\n      ? dp[i-1][j-1]+1\n      : Math.max(dp[i-1][j],dp[i][j-1]);`,
+  when:'The problem involves comparing two sequences (LCS, edit distance) or navigating a 2D grid optimally.',
+  keywords:['2D grid','two strings','LCS','edit distance','unique paths','interleaving'],ds:'2D matrix dp[i][j]'}
+];
+
+const GREED_PERSONAS=[
+  {emoji:'🤑',name:'The Opportunist',technical:'Greedy Algorithm',
+  realLife:"Grabbing cash off a table — you always grab the largest bill immediately. Never look back.",
+  code:`let maxProfit = 0, minPrice = Infinity;\nfor (const price of prices) {\n  minPrice = Math.min(minPrice, price);\n  maxProfit = Math.max(maxProfit, price - minPrice);\n}\nreturn maxProfit;`,
+  when:'Optimization problems where making the "best" immediate choice guarantees the best final score. No backtracking needed.',
+  keywords:['Max profit','jump game','minimum intervals','gas station','task scheduler'],ds:'None / Sort first, then scan'}
+];
+
+const SORT_PERSONAS=[
+  {emoji:'🗂️',name:'The Organizer',technical:'Array Sort — O(n log n)',
+  realLife:"A teacher alphabetically ordering an entire stack of 100 exams so they can be permanently filed.",
+  code:`arr.sort((a, b) => a - b);\n// Now use Two Pointers or merge intervals`,
+  when:"You need the ENTIRE array ordered. Typically followed by Two Pointers or interval merging.",
+  keywords:['Return sorted array','order elements','merge intervals after sorting'],ds:'Sorted Array'},
+  {emoji:'👑',name:'The VIP Manager',technical:'Min-Heap / Max-Heap — O(n log k)',
+  realLife:"A bouncer tracking only the top 3 biggest spenders. They don't care about ranking everyone — just the top 3.",
+  code:`const heap = [];\nfor (const num of nums) {\n  heap.push(num);\n  heap.sort((a,b)=>a-b);\n  if (heap.length > k) heap.shift();\n}\nreturn heap[0]; // Kth largest`,
+  when:"K is significantly smaller than N, or you have a streaming data source needing the current max/min.",
+  keywords:['Top K','Kth largest','Kth smallest','data stream','median of stream'],ds:'Min-Heap or Max-Heap (Priority Queue)'}
+];
+
+const LL_PERSONAS=[
+  {emoji:'🏃',name:'The Relay Runner',technical:'Node Traversal',
+  realLife:"A relay race where each runner only knows who they're passing the baton to. You only have the .next reference.",
+  code:`let curr = head;\nwhile (curr !== null) {\n  // process curr.val\n  curr = curr.next;\n}`,
+  when:"You don't have indices — you only have .next pointers.",
+  keywords:['Reverse list','middle node','merge lists','detect cycle'],ds:'ListNode'},
+  {emoji:'🔄',name:'The Reverser',technical:'In-Place Linked List Reversal',
+  realLife:"Rerouting a one-way street by flipping every street sign to point the other direction.",
+  code:`let prev = null, curr = head;\nwhile (curr) {\n  const next = curr.next;\n  curr.next = prev;\n  prev = curr;\n  curr = next;\n}\nreturn prev;`,
+  when:"The problem asks to reverse a linked list or a portion of it.",
+  keywords:['Reverse linked list','reverse sublist','k-group reversal'],ds:'Three pointers: prev, curr, next'}
+];
+
+const TREES_PERSONAS=[
+  {emoji:'🌳',name:'The Branch Manager (DFS)',technical:'Depth-First Search — Recursion',
+  realLife:"Exploring a family tree by going deep down one bloodline first before checking siblings.",
+  code:`function dfs(node) {\n  if (!node) return 0;\n  const left = dfs(node.left);\n  const right = dfs(node.right);\n  return 1 + Math.max(left, right);\n}`,
+  when:"Path problems, height, diameter, checking symmetry, or any problem needing to go deep before processing.",
+  keywords:['Max depth','diameter','path sum','invert tree','validate BST'],ds:'TreeNode + recursion stack'},
+  {emoji:'📊',name:'The Generational Scanner (BFS)',technical:'Breadth-First Search — Queue',
+  realLife:"Exploring a family tree generation by generation — checking all siblings before going to the next level.",
+  code:`const queue = [root];\nwhile (queue.length > 0) {\n  const size = queue.length;\n  for (let i=0; i<size; i++) {\n    const node = queue.shift();\n    if (node.left) queue.push(node.left);\n    if (node.right) queue.push(node.right);\n  }\n}`,
+  when:"Level-order traversal, shortest path, or anything requiring node-by-node level processing.",
+  keywords:['Level order','right side view','zigzag','minimum depth'],ds:'TreeNode + Queue array'}
+];
+
+const TRIES_PERSONAS=[
+  {emoji:'📖',name:'The Librarian',technical:'Prefix Tree (Trie)',
+  realLife:"Looking up a word in a dictionary by flipping to 'C', then 'A', then 'T' to find 'Cat'.",
+  code:`class TrieNode {\n  constructor() {\n    this.children = {};\n    this.isEnd = false;\n  }\n}\nfunction insert(word) {\n  let node = root;\n  for (const char of word) {\n    if (!node.children[char])\n      node.children[char] = new TrieNode();\n    node = node.children[char];\n  }\n  node.isEnd = true;\n}`,
+  when:'The prompt asks you to build "autocomplete," design a "dictionary," or search for "prefixes" of words.',
+  keywords:['Autocomplete','prefix','word dictionary','word search II','starts with'],ds:'TrieNode (children map + isEnd flag)'}
+];
+
+const STACK_PERSONAS=[
+  {emoji:'🥞',name:'The Plate Stacker',technical:'Last-In-First-Out (LIFO)',
+  realLife:"Adding and removing plates from a spring-loaded cafeteria dispenser. You can ONLY touch the top plate.",
+  code:`const stack = [];\nfor (const char of s) {\n  if ('([{'.includes(char)) {\n    stack.push(char);\n  } else {\n    if (!stack.length) return false;\n    const top = stack.pop();\n    if (!matches(top, char)) return false;\n  }\n}\nreturn stack.length === 0;`,
+  when:"It strictly requires Last-In-First-Out logic — what you just saw is the most relevant thing right now.",
+  keywords:['Matching brackets','next greater element','reverse polish notation','daily temperatures','min stack'],ds:'Array used as Stack (push/pop)'}
+];
+
+const BS_PERSONAS=[
+  {emoji:'✂️',name:'The Halver',technical:'Binary Search — O(log n)',
+  realLife:"Guessing a number between 1 and 100. Guess 50 and it's 'too high' — instantly eliminate 51–100.",
+  code:`let left = 0, right = arr.length - 1;\nwhile (left <= right) {\n  const mid = Math.floor((left + right) / 2);\n  if (arr[mid] === target) return mid;\n  else if (arr[mid] < target) left = mid + 1;\n  else right = mid - 1;\n}\nreturn -1;`,
+  when:"The prompt hands you a SORTED array and explicitly demands O(log n) time.",
+  keywords:['Sorted array','O(log n) time','search insert position','find minimum in rotated'],ds:'Sorted Array + two index variables'},
+  {emoji:'🎯',name:'The Condition Binarizer',technical:'Binary Search on Answer Space',
+  realLife:"You can't find the answer directly, but you can check: 'Is the answer at least X?' Repeatedly halve the range of possible answers.",
+  code:`let lo = minPossible, hi = maxPossible;\nwhile (lo < hi) {\n  const mid = Math.floor((lo + hi) / 2);\n  if (canAchieve(mid)) hi = mid;\n  else lo = mid + 1;\n}\nreturn lo;`,
+  when:"The problem doesn't give you a sorted array, but the answer has a monotonic range.",
+  keywords:['Capacity to ship','koko eating bananas','split array largest sum','minimize max'],ds:'Answer range as virtual sorted array'}
+];
+
+const GRAPH_PERSONAS=[
+  {emoji:'🧭',name:'The Navigator (BFS)',technical:'Breadth-First Search — Shortest Path',
+  realLife:"Looking at an airline map to find the fastest (fewest stops) connection between two cities.",
+  code:`const visited = new Set();\nconst queue = [[start, 0]];\nvisited.add(start);\nwhile (queue.length) {\n  const [node, dist] = queue.shift();\n  if (node === target) return dist;\n  for (const nb of adj[node]) {\n    if (!visited.has(nb)) {\n      visited.add(nb);\n      queue.push([nb, dist+1]);\n    }\n  }\n}`,
+  when:"You need the SHORTEST PATH in terms of number of edges/steps.",
+  keywords:['Shortest path','word ladder','rotting oranges','0-1 matrix'],ds:'Adjacency List + Queue + visited Set'},
+  {emoji:'🌊',name:'The Flood Filler (DFS)',technical:'Depth-First Search — Connected Components',
+  realLife:"Flood-fill in MS Paint. Click one pixel and it floods all connected same-color pixels.",
+  code:`function dfs(grid, r, c) {\n  if (r<0||r>=m||c<0||c>=n) return;\n  if (grid[r][c]==='0') return;\n  grid[r][c]='0';\n  dfs(grid,r+1,c); dfs(grid,r-1,c);\n  dfs(grid,r,c+1); dfs(grid,r,c-1);\n}\nfor(let r=0;r<m;r++)\n  for(let c=0;c<n;c++)\n    if(grid[r][c]==='1'){dfs(grid,r,c);islands++;}`,
+  when:"Finding all connected components, counting islands, or flood-filling a grid.",
+  keywords:['Number of islands','connected components','pacific atlantic','surrounded regions'],ds:'2D Grid + recursion / visited set'}
+];
+
+const INTERVAL_PERSONAS=[
+  {emoji:'📅',name:'The Scheduler',technical:'Interval Merging',
+  realLife:"Looking at your calendar and merging two back-to-back meetings into one long block.",
+  code:`intervals.sort((a,b) => a[0]-b[0]);\nconst merged = [intervals[0]];\nfor(const [s,e] of intervals.slice(1)) {\n  const prev = merged[merged.length-1];\n  if(s <= prev[1]) prev[1]=Math.max(prev[1],e);\n  else merged.push([s,e]);\n}\nreturn merged;`,
+  when:"You see a 2D array of [start, end] pairs and need to merge, find gaps, or count overlaps.",
+  keywords:['Overlapping','merge intervals','meeting rooms','insert interval','non-overlapping'],ds:'2D Array sorted by start time'},
+  {emoji:'🗓️',name:'The Meeting Booker',technical:'Interval Scheduling / Count Overlaps',
+  realLife:"A hotel booking manager who must determine the maximum number of guests checked in simultaneously.",
+  code:`const ends = [];\nintervals.sort((a,b) => a[0]-b[0]);\nfor(const [s,e] of intervals) {\n  if(ends.length>0 && ends[0]<=s)\n    ends.shift();\n  ends.push(e);\n  ends.sort((a,b)=>a-b);\n}\nreturn ends.length;`,
+  when:"Counting minimum rooms/resources, or scheduling non-overlapping intervals.",
+  keywords:['Meeting rooms II','minimum rooms','non-overlapping intervals'],ds:'Min-Heap of end times'}
+];
+
+const BITS_PERSONAS=[
+  {emoji:'💻',name:'The Hacker',technical:'Bitwise Operators',
+  realLife:"Flipping physical switches on a circuit board — 1s and 0s at the hardware level.",
+  code:`// n & (n-1) removes lowest set bit\nfunction countBits(n) {\n  let count = 0;\n  while(n) { n &= (n-1); count++; }\n  return count;\n}\n// XOR: a ^ a = 0, a ^ 0 = a\n// Missing number: nums.reduce((a,b)=>a^b) ^ n`,
+  when:"Pure binary math — counting bits, finding the single non-duplicate, swapping without temp.",
+  keywords:['Number of 1 bits','XOR','missing number','reverse bits','power of two'],ds:'Integers + bitwise operators (&, |, ^, <<, >>)'},
+  {emoji:'📐',name:'The Geometry Wizard',technical:'Matrix Transformations',
+  realLife:"Rotating a Rubik's Cube face — you need to know the mathematical relationship between old and new positions.",
+  code:`// Rotate matrix 90° clockwise:\n// Step 1: Transpose\nfor(let i=0;i<n;i++)\n  for(let j=i+1;j<n;j++)\n    [mat[i][j],mat[j][i]]=[mat[j][i],mat[i][j]];\n// Step 2: Reverse each row\nfor(let i=0;i<n;i++) mat[i].reverse();`,
+  when:"Matrix rotation, spiral traversal, or any problem requiring geometric index arithmetic.",
+  keywords:['Rotate image','spiral matrix','set zeroes','diagonal traverse'],ds:'2D Matrix with index arithmetic'}
+];
+
+// ============================================================
+//   CHEATSHEET DATA
+// ============================================================
+const kw=s=>`<span class="kw">${s}</span>`;
+
+const HASH_HEADERS=['Persona','Technical Name','Core Question','Keywords','DS'];
+const HASH_ROWS=[
+  ['🛡️ Bouncer','Uniqueness','"Have I seen this before?"',`${kw('Distinct')}${kw('duplicate')}${kw('unique')}`,'Hash Set'],
+  ['💵 Cash Register','Frequencies','"How many of this do I have?"',`${kw('Most frequent')}${kw('anagram')}${kw('majority')}`,'Hash Map'],
+  ['🧩 Matchmaker','Complements','"I have X. Do I have its pair Y?"',`${kw('Two sum')}${kw('difference of K')}`,'Hash Map'],
+  ['📬 Mailroom','Grouping','"Which bucket does this belong in?"',`${kw('Group')}${kw('group anagrams')}`,'Hash Map → Arrays'],
+  ['📝 Cheat Sheet','Caching','"Have I computed this input before?"',`${kw('Optimize')}${kw('overlapping subproblems')}`,'Hash Map'],
+  ['📞 Phonebook','Relationships','"Who is this item connected to?"',`${kw('Network')}${kw('graph')}${kw('flight paths')}`,'Hash Map → Arrays']
+];
+const PTR_HEADERS=['Persona','Technical Name','Movement Pattern','Keywords'];
+const PTR_ROWS=[
+  ['📚 Bookends','Opposite Ends','left++ and right-- meeting in the middle',`${kw('Sorted array')}${kw('palindrome')}${kw('Two Sum II')}`],
+  ['👷 Foreman & Worker','Read/Write','Worker checks all; Foreman saves valid only',`${kw('In-place')}${kw('remove duplicates')}${kw('move zeroes')}`],
+  ['🤐 Zipper','Merging Arrays','Compare Arr1[A] vs Arr2[B], move the smaller',`${kw('Merge')}${kw('two sorted arrays')}${kw('intersection')}`],
+  ['🏃 Track Stars','Fast/Slow','Slow=+1, Fast=+2 — meet if cycle',`${kw('Middle element')}${kw('cycle')}${kw('linked list')}`]
+];
+const WIN_HEADERS=['Persona','Goal','Movement Rule','Keywords'];
+const WIN_ROWS=[
+  ['🖼️ Picture Frame','Maintain strict size K','Right steps +1 (add). Left steps +1 (remove).',`${kw('Size K')}${kw('length K')}${kw('consecutive K')}`],
+  ['🐛 Inchworm','Find the LONGEST valid chunk','Expand Right until invalid. Shrink Left to fix.',`${kw('Longest substring')}${kw('maximum contiguous')}`],
+  ['🧳 Minimalist','Find the SHORTEST valid chunk','Expand Right until valid. Shrink Left to trim.',`${kw('Minimum window')}${kw('shortest subarray')}`]
+];
+const BACK_HEADERS=['Persona','Goal','Core Action','Key Code','Keywords'];
+const BACK_ROWS=[['🗺️ Explorer','Find ALL possible solutions','Make choice → explore → UN-MAKE choice','path.push(x) → recurse → path.pop()',`${kw('All possible')}${kw('permutations')}${kw('combinations')}${kw('subsets')}`]];
+const DP_HEADERS=['Persona','Type','Goal','Key Structure','Keywords'];
+const DP_ROWS=[
+  ['🧠 Cacher','1-D DP','Best answer for sequence of choices','dp[i] array',`${kw('Climbing stairs')}${kw('house robber')}${kw('coin change')}`],
+  ['📐 Grid Walker','2-D DP','Best answer comparing two sequences or grid','dp[i][j] matrix',`${kw('LCS')}${kw('edit distance')}${kw('unique paths')}`]
+];
+const GREED_HEADERS=['Persona','Goal','Core Action','When it Works','Keywords'];
+const GREED_ROWS=[['🤑 Opportunist','Make the immediate best move','Take highest value now; never backtrack.','Local optimal = Global optimal (provable!)',`${kw('Max profit')}${kw('jump game')}${kw('gas station')}`]];
+const FLOATER_HEADERS=['Persona','Goal','Time','When to Use','Keywords'];
+const FLOATER_ROWS=[
+  ['🗂️ Organizer','Order EVERYTHING','O(n log n)','Need full sorted order',`${kw('Sort array')}${kw('order elements')}`],
+  ['👑 VIP Manager','Track only Top K','O(n log k)','Only need extremes, or streaming data',`${kw('Kth largest')}${kw('top K frequent')}${kw('stream')}`]
+];
+const LL_HEADERS=['Persona','Core Action','When to Use','Keywords'];
+const LL_ROWS=[
+  ['🏃 Relay Runner','Traverse using .next','Reading/searching a linked list',`${kw('Reverse list')}${kw('merge lists')}${kw('middle node')}`],
+  ['🔄 Reverser','Flip .next pointers with 3 vars','Reversing all or part of a list',`${kw('Reverse linked list')}${kw('k-group reversal')}${kw('palindrome LL')}`]
+];
+const TREES_HEADERS=['Persona','Strategy','DS','Best For','Keywords'];
+const TREES_ROWS=[
+  ['🌳 Branch Manager','DFS — go deep first','TreeNode + recursion','Height, path sums, symmetry',`${kw('Max depth')}${kw('path sum')}${kw('invert')}${kw('validate BST')}`],
+  ['📊 Generational Scanner','BFS — level by level','TreeNode + Queue','Level order, shortest path',`${kw('Level order')}${kw('right view')}${kw('min depth')}`]
+];
+const TRIES_HEADERS=['Persona','Core Action','DS','Keywords'];
+const TRIES_ROWS=[['📖 Librarian','Search char-by-char down prefix path','TrieNode (children + isEnd)',`${kw('Autocomplete')}${kw('prefix')}${kw('word dictionary')}${kw('word search II')}`]];
+const STACK_HEADERS=['Persona','Principle','Core Action','Keywords'];
+const STACK_ROWS=[['🥞 Plate Stacker','LIFO — Last In, First Out','push() to add, pop() to remove from top',`${kw('Matching brackets')}${kw('next greater element')}${kw('reverse polish')}${kw('min stack')}`]];
+const BS_HEADERS=['Persona','Strategy','When to Use','Keywords'];
+const BS_ROWS=[
+  ['✂️ Halver','Classic binary search on sorted array','Sorted array + O(log n) requirement',`${kw('Sorted array')}${kw('O(log n)')}${kw('search insert')}`],
+  ['🎯 Condition Binarizer','Binary search on answer space','Monotonic answer range',`${kw('Koko bananas')}${kw('ship packages')}${kw('split array')}`]
+];
+const GRAPH_HEADERS=['Persona','Algorithm','Best For','Keywords'];
+const GRAPH_ROWS=[
+  ['🧭 Navigator','BFS — Queue','Shortest path (fewest edges)',`${kw('Shortest path')}${kw('word ladder')}${kw('rotting oranges')}`],
+  ['🌊 Flood Filler','DFS — Recursion','Connected components',`${kw('Number of islands')}${kw('connected components')}${kw('Pacific Atlantic')}`]
+];
+const INTERVAL_HEADERS=['Persona','Strategy','Core Logic','Keywords'];
+const INTERVAL_ROWS=[
+  ['📅 Scheduler','Merge overlapping','Sort by start, merge if current.start ≤ prev.end',`${kw('Merge intervals')}${kw('insert interval')}`],
+  ['🗓️ Meeting Booker','Count concurrent','Min-heap of end times, count active at any point',`${kw('Meeting rooms II')}${kw('minimum resources')}`]
+];
+const BITS_HEADERS=['Persona','Technique','Key Trick','Keywords'];
+const BITS_ROWS=[
+  ['💻 Hacker','Bitwise operators','n & (n-1) removes lowest set bit; XOR self-cancels',`${kw('Count bits')}${kw('XOR')}${kw('missing number')}${kw('power of 2')}`],
+  ['📐 Geometry Wizard','Matrix index math','Transpose then reverse rows for 90° rotation',`${kw('Rotate image')}${kw('spiral matrix')}${kw('set zeroes')}`]
+];
+
+// ============================================================
+//   PLAYER ENGINE
+// ============================================================
+const PLAYERS = {};
+
+function makePlayer(id, steps){
+  PLAYERS[id]={steps,cur:0};
+  renderPlayer(id);
+}
+function renderPlayer(id){
+  const p=PLAYERS[id]; if(!p)return;
+  const s=p.steps[p.cur];
+  const bodyEl=document.getElementById(id+'-viz-body');
+  const stepEl=document.getElementById(id+'-step');
+  const prevEl=document.getElementById(id+'-prev');
+  const nextEl=document.getElementById(id+'-next');
+  if(bodyEl&&s) bodyEl.innerHTML=s.html;
+  if(stepEl) stepEl.textContent=`Step ${p.cur+1} / ${p.steps.length}`;
+  if(prevEl) prevEl.disabled=p.cur===0;
+  if(nextEl) nextEl.disabled=p.cur===p.steps.length-1;
+}
+function navPlayer(id,dir){
+  const p=PLAYERS[id]; if(!p)return;
+  p.cur=Math.max(0,Math.min(p.steps.length-1,p.cur+dir));
+  renderPlayer(id);
+}
+
+// ============================================================
+//   HASH VIZ
+// ============================================================
+let currentHashTab='bouncer';
+const hashDemos={};
+
+function initHashViz(){
+  const tabs=[
+    {id:'bouncer',label:'🛡️ Bouncer'},{id:'cashregister',label:'💵 Cash Register'},
+    {id:'matchmaker',label:'🧩 Matchmaker'},{id:'mailroom',label:'📬 Mailroom'},
+    {id:'cheatsheet',label:'📝 Cheat Sheet'},{id:'phonebook',label:'📞 Phonebook'}
+  ];
+  document.getElementById('hash-viz-tabs').innerHTML=tabs.map(t=>`<button class="viz-tab${t.id===currentHashTab?' active':''}" onclick="switchHashTab('${t.id}')" style="${t.id===currentHashTab?'background:'+C.hash+';color:#000;border-color:'+C.hash:''}">${t.label}</button>`).join('');
+  hashDemos.bouncer=buildBouncerSteps();
+  hashDemos.cashregister=buildCashRegisterSteps();
+  hashDemos.matchmaker=buildMatchmakerSteps();
+  hashDemos.mailroom=buildMailroomSteps();
+  hashDemos.cheatsheet=buildCheatSheetSteps();
+  hashDemos.phonebook=buildPhonebookSteps();
+  PLAYERS['hash']={steps:hashDemos[currentHashTab],cur:0};
+  renderPlayer('hash');
+  document.getElementById('hash-next').disabled=false;
+}
+function switchHashTab(id){
+  currentHashTab=id;
+  PLAYERS['hash']={steps:hashDemos[id],cur:0};
+  renderPlayer('hash');
+  document.querySelectorAll('#hash-viz-tabs .viz-tab').forEach(b=>{
+    const tid=b.getAttribute('onclick').match(/'([^']+)'/)[1];
+    b.className='viz-tab'+(tid===id?' active':'');
+    b.style=tid===id?`background:${C.hash};color:#000;border-color:${C.hash}`:'';
+  });
+}
+function hashNav(d){ navPlayer('hash',d); }
+
+function buildBouncerSteps(){
+  const arr=[2,7,11,15,3,2,7]; const steps=[]; const seen=new Set();
+  steps.push({html:arrRow(arr.map((v,i)=>cellIdx(v,i)))+ds('Set (VIP list)','∅',C.hash)+msg(`🛡️ <strong>The Bouncer</strong> — Array: [${arr}]. Checking for duplicates.<br>If already in the set → duplicate found!`)});
+  for(let i=0;i<arr.length;i++){
+    const isDup=seen.has(arr[i]);
+    const cells=arr.map((v,j)=>cellIdx(v,j,j<i?{bg:C.ok,bc:C.ok_b}:j===i?isDup?{bg:C.warn,bc:C.warn_b,bold:true}:{bg:C.hi,bc:C.hi_b,bold:true}:{}));
+    if(!isDup) seen.add(arr[i]);
+    steps.push({html:arrRow(cells)+ds('Set',setStr(seen),C.hash)+msg(isDup?`🚫 <strong style="color:${C.back}">${arr[i]} ALREADY in set!</strong> → Duplicate found!`:`✅ ${arr[i]} not in set → Add it.`)});
+    if(isDup) break;
+  }
+  return steps;
+}
+function buildCashRegisterSteps(){
+  const arr=[2,7,2,3,7,7]; const steps=[]; const freq=new Map();
+  steps.push({html:arrRow(arr.map((v,i)=>cellIdx(v,i)))+ds('Frequency Map','∅',C.hash)+msg(`💵 <strong>The Cash Register</strong> — Counting occurrences of each element.`)});
+  for(let i=0;i<arr.length;i++){
+    freq.set(arr[i],(freq.get(arr[i])||0)+1);
+    const cells=arr.map((v,j)=>cellIdx(v,j,j<i?{bg:C.ok,bc:C.ok_b}:j===i?{bg:C.hi,bc:C.hi_b,bold:true}:{}));
+    steps.push({html:arrRow(cells)+ds('Freq Map',[...freq].map(([k,v])=>`${k}→${v}`).join(', '),C.hash)+msg(`index [${i}]: <strong style="color:${C.hash}">${arr[i]}</strong> → count = <strong>${freq.get(arr[i])}</strong>`)});
+  }
+  const maxE=[...freq].reduce((a,b)=>b[1]>a[1]?b:a);
+  steps.push({html:arrRow(arr.map((v,i)=>cellIdx(v,i,v===maxE[0]?{bg:C.hi,bc:C.hi_b,bold:true}:{opacity:0.5})))+ds('Freq Map',[...freq].map(([k,v])=>`${k}→${v}`).join(', '),C.hash)+msg(`🏆 Most frequent: <strong style="color:${C.hash}">${maxE[0]}</strong> appears <strong>${maxE[1]}</strong> times`)});
+  return steps;
+}
+function buildMatchmakerSteps(){
+  const arr=[2,7,11,15]; const target=9; const steps=[]; const map=new Map();
+  steps.push({html:arrRow(arr.map((v,i)=>cellIdx(v,i)))+ds('Seen Map','∅',C.hash)+msg(`🧩 <strong>The Matchmaker</strong> — Target: <strong style="color:${C.hash}">${target}</strong>. For each element ask: "Is my complement (${target} - me) in the map?"`)});
+  for(let i=0;i<arr.length;i++){
+    const comp=target-arr[i]; const found=map.has(comp);
+    if(found){
+      const fi=map.get(comp);
+      const cells=arr.map((v,j)=>cellIdx(v,j,j===i?{bg:C.hi,bc:C.hi_b,bold:true,label:`need:${comp}`}:j===fi?{bg:C.ok,bc:C.ok_b,bold:true,label:'match!'}:j<i?{bg:C.ok,bc:C.ok_b}:{}));
+      steps.push({html:arrRow(cells)+ds('Seen Map',[...map].map(([k,v])=>`${k}→i${v}`).join(', '),C.hash)+msg(`✅ <strong>Match!</strong> arr[${fi}]=${arr[fi]} + arr[${i}]=${arr[i]} = ${target}. Return [${fi},${i}]`)});
+      break;
+    }
+    map.set(arr[i],i);
+    const cells=arr.map((v,j)=>cellIdx(v,j,j<i?{bg:C.ok,bc:C.ok_b}:j===i?{bg:C.hi,bc:C.hi_b,bold:true,label:`need:${comp}`}:{}));
+    steps.push({html:arrRow(cells)+ds('Seen Map',[...map].map(([k,v])=>`${k}→i${v}`).join(', '),C.hash)+msg(`i[${i}]: value ${arr[i]}, need complement <strong>${comp}</strong>. Not found → store ${arr[i]}.`)});
+  }
+  return steps;
+}
+function buildMailroomSteps(){
+  const words=['eat','tea','tan','ate','nat','bat']; const steps=[]; const groups=new Map();
+  steps.push({html:`<div class="ds-box">${words.map(w=>`<span class="kw" style="margin:2px">${w}</span>`).join('')}</div>`+ds('Groups','∅',C.hash)+msg(`📬 <strong>The Mailroom</strong> — Sort each word's letters to get the cubby key. Same key = same anagram group.`)});
+  for(const w of words){
+    const key=w.split('').sort().join('');
+    if(!groups.has(key)) groups.set(key,[]);
+    groups.get(key).push(w);
+    const gStr=[...groups].map(([k,v])=>`<strong style="color:${C.hash}">"${k}"</strong>→[${v.join(',')}]`).join(' | ');
+    steps.push({html:`<div class="ds-box"><span class="ds-label" style="color:${C.hash}">Current Word</span><strong style="color:${C.hash}">"${w}"</strong> → key: <strong>"${key}"</strong></div><div class="ds-box"><span class="ds-label" style="color:${C.hash}">Groups</span>${gStr}</div>`+msg(`"${w}" → sorted = "<strong style="color:${C.hash}">${key}</strong>" → placed in group.`)});
+  }
+  return steps;
+}
+function buildCheatSheetSteps(){
+  const cache=new Map(); const calls=[]; let totalCalls=0;
+  function fib(n,depth=0){
+    if(n<=1){calls.push({n,depth,hit:false,base:true,res:n});return n;}
+    if(cache.has(n)){calls.push({n,depth,hit:true,res:cache.get(n)});return cache.get(n);}
+    calls.push({n,depth,hit:false,base:false,res:null,entering:true});
+    const r=fib(n-1,depth+1)+fib(n-2,depth+1);
+    cache.set(n,r);
+    calls.push({n,depth,hit:false,base:false,res:r,done:true});
+    return r;
+  }
+  fib(5);
+  const steps=[{html:ds('Memo Cache','∅',C.hash)+msg(`📝 <strong>The Cheat Sheet</strong> — fib(5) with memoization. Watch the cache fill and reuse!`)}];
+  const mc=new Map(); let cn=0;
+  for(const c of calls){
+    cn++;
+    if(c.done) mc.set(c.n,c.res);
+    const indent='&nbsp;'.repeat(c.depth*4);
+    const color=c.hit?C.dp:c.base?C.hash:C.heading;
+    const label=c.hit?'💾 HIT':c.base?'📌 BASE':c.done?'✅ DONE':'🔄 call';
+    steps.push({html:`<div class="ds-box" style="margin-bottom:12px"><span class="ds-label" style="color:${C.hash}">Call #${cn}</span>${indent}<strong style="color:${color}">fib(${c.n})</strong> — ${label}${c.res!=null?' = <strong style="color:'+C.dp+'">'+c.res+'</strong>':''}</div>`+ds('Cache',[...mc].size?[...mc].map(([k,v])=>`fib(${k})=${v}`).join(', '):'∅',C.hash)+msg(c.hit?`🚀 <strong style="color:${C.dp}">Cache hit!</strong> fib(${c.n})=${c.res} — skip the work!`:c.base?`📌 Base case: fib(${c.n})=${c.res}`:c.done?`✅ fib(${c.n})=${c.res} stored.`:`Calling fib(${c.n})...`)});
+  }
+  return steps;
+}
+function buildPhonebookSteps(){
+  const edges=[[0,1],[0,2],[1,3],[2,3]]; const adj=new Map(); const steps=[];
+  steps.push({html:`<div class="ds-box"><span class="ds-label" style="color:${C.hash}">Edges</span>${edges.map(([a,b])=>`${a}↔${b}`).join(', ')}</div>`+ds('Adjacency List','∅',C.hash)+msg(`📞 <strong>The Phonebook</strong> — Building adjacency list from edges.`)});
+  for(const [a,b] of edges){
+    if(!adj.has(a))adj.set(a,[]);if(!adj.has(b))adj.set(b,[]);
+    adj.get(a).push(b);adj.get(b).push(a);
+    const adjStr=[...adj].map(([k,v])=>`<strong style="color:${C.hash}">${k}</strong>→[${v.join(',')}]`).join('  ');
+    steps.push({html:`<div class="ds-box" style="margin-bottom:12px"><span class="ds-label" style="color:${C.hash}">New Edge</span><strong style="color:${C.hash}">${a}</strong> ↔ <strong style="color:${C.hash}">${b}</strong></div><div class="ds-box">${adjStr}</div>`+msg(`Added ${a}↔${b}: mutual pointers added.`)});
+  }
+  return steps;
+}
+
+// ============================================================
+//   TWO POINTERS VIZ
+// ============================================================
+let currentPtrTab='bookends';
+const ptrDemos={};
+
+function initPtrViz(){
+  const tabs=[{id:'bookends',label:'📚 Bookends'},{id:'foreman',label:'👷 Foreman'},{id:'zipper',label:'🤐 Zipper'},{id:'trackstars',label:'🏃 Track Stars'}];
+  document.getElementById('ptr-viz-tabs').innerHTML=tabs.map(t=>`<button class="viz-tab${t.id===currentPtrTab?' active':''}" onclick="switchPtrTab('${t.id}')" style="${t.id===currentPtrTab?'background:'+C.ptr+';color:#000;border-color:'+C.ptr:''}">${t.label}</button>`).join('');
+  ptrDemos.bookends=buildBookendsSteps();
+  ptrDemos.foreman=buildForemanSteps();
+  ptrDemos.zipper=buildZipperSteps();
+  ptrDemos.trackstars=buildTrackStarsSteps();
+  PLAYERS['ptr']={steps:ptrDemos[currentPtrTab],cur:0};
+  renderPlayer('ptr');
+  document.getElementById('ptr-next').disabled=false;
+}
+function switchPtrTab(id){
+  currentPtrTab=id; PLAYERS['ptr']={steps:ptrDemos[id],cur:0}; renderPlayer('ptr');
+  document.querySelectorAll('#ptr-viz-tabs .viz-tab').forEach(b=>{
+    const tid=b.getAttribute('onclick').match(/'([^']+)'/)[1];
+    b.className='viz-tab'+(tid===id?' active':'');
+    b.style=tid===id?`background:${C.ptr};color:#000;border-color:${C.ptr}`:'';
+  });
+}
+function ptrNav(d){ navPlayer('ptr',d); }
+
+function buildBookendsSteps(){
+  const arr=[-2,-1,0,3,5,8]; const target=3; let L=0,R=arr.length-1; const steps=[];
+  function mkRow(l,r){
+    return arrRow(arr.map((v,i)=>i===l?cellIdx(v,i,{bg:C.blue,bc:C.ptr,bold:true,ptr:'L',pcolor:C.ptr}):i===r?cellIdx(v,i,{bg:C.warn,bc:C.warn_b,bold:true,ptr:'R',pcolor:C.back}):cellIdx(v,i)));
+  }
+  steps.push({html:mkRow(L,R)+msg(`📚 <strong>The Bookends</strong> — Sorted: [${arr}], target=${target}. L starts left, R starts right.`)});
+  while(L<R){
+    const sum=arr[L]+arr[R];
+    if(sum===target){
+      steps.push({html:arrRow(arr.map((v,i)=>cellIdx(v,i,i===L||i===R?{bg:C.ok,bc:C.ok_b,bold:true}:{})))+msg(`✅ <strong style="color:${C.dp}">Found!</strong> arr[${L}]+arr[${R}]=${arr[L]}+${arr[R]}=${sum}=target!`)}); break;
+    } else if(sum<target){
+      steps.push({html:mkRow(L,R)+msg(`${arr[L]}+${arr[R]}=${sum} < ${target} → Too small. Move <strong style="color:${C.ptr}">L</strong> right.`)});
+      L++;
+    } else {
+      steps.push({html:mkRow(L,R)+msg(`${arr[L]}+${arr[R]}=${sum} > ${target} → Too big. Move <strong style="color:${C.back}">R</strong> left.`)});
+      R--;
+    }
+  }
+  return steps;
+}
+function buildForemanSteps(){
+  const arr=[0,1,2,2,3,0,4,2]; let slow=0; const steps=[];
+  const modified=[];
+  steps.push({html:arrRow(arr.map((v,i)=>cellIdx(v,i)))+msg(`👷 <strong>Foreman & Worker</strong> — Remove all 2s in-place. Worker (fast) scans all, Foreman (slow) saves valid.`)});
+  for(let fast=0;fast<arr.length;fast++){
+    if(arr[fast]!==2){
+      arr[slow]=arr[fast]; modified.push(slow);
+      steps.push({html:arrRow(arr.map((v,j)=>cellIdx(v,j,modified.includes(j)&&j<slow?{bg:C.ok,bc:C.ok_b}:j===slow?{bg:C.blue,bc:C.ptr,bold:true,ptr:'slow',pcolor:C.ptr}:j===fast?{bg:C.hi,bc:C.hi_b,bold:true,ptr:'fast',pcolor:C.hash}:{})))+msg(`fast[${fast}]=${arr[fast]} valid → Foreman places at slow[${slow}]. slow→${slow+1}.`)});
+      slow++;
+    } else {
+      steps.push({html:arrRow(arr.map((v,j)=>cellIdx(v,j,modified.includes(j)&&j<slow?{bg:C.ok,bc:C.ok_b}:j===slow?{bg:C.blue,bc:C.ptr,bold:true,ptr:'slow',pcolor:C.ptr}:j===fast?{bg:C.warn,bc:C.warn_b,bold:true,ptr:'fast',pcolor:C.back}:{})))+msg(`fast[${fast}]=${arr[fast]} is 2 → Skip! <strong style="color:${C.back}">Foreman stays.</strong>`)});
+    }
+  }
+  steps.push({html:arrRow(arr.map((v,j)=>cellIdx(v,j,j<slow?{bg:C.ok,bc:C.ok_b}:{opacity:0.3})))+msg(`✅ Valid elements in [0..${slow-1}]: <strong style="color:${C.dp}">[${arr.slice(0,slow).join(', ')}]</strong>`)});
+  return steps;
+}
+function buildZipperSteps(){
+  const a1=[1,3,5],a2=[2,4,6]; let i=0,j=0; const merged=[]; const steps=[];
+  steps.push({html:ds('Array 1',a1.join(', '),C.ptr)+ds('Array 2',a2.join(', '),C.back)+ds('Merged','∅',C.dp)+msg(`🤐 <strong>The Zipper</strong> — Merge [${a1}] and [${a2}]. Compare fronts, pick smaller.`)});
+  while(i<a1.length&&j<a2.length){
+    const pick=a1[i]<a2[j];
+    merged.push(pick?a1[i]:a2[j]);
+    steps.push({html:ds('Array 1',a1.map((v,x)=>x<i?`<del>${v}</del>`:x===i?`<strong style="color:${C.ptr}">[${v}]</strong>`:v).join(', '),C.ptr)+ds('Array 2',a2.map((v,x)=>x<j?`<del>${v}</del>`:x===j?`<strong style="color:${C.back}">[${v}]</strong>`:v).join(', '),C.back)+ds('Merged',merged.join(', '),C.dp)+msg(`Compare <strong style="color:${C.ptr}">${a1[i]}</strong> vs <strong style="color:${C.back}">${a2[j]}</strong> → Pick <strong style="color:${C.dp}">${pick?a1[i]:a2[j]}</strong>`)});
+    if(pick) i++; else j++;
+  }
+  while(i<a1.length) merged.push(a1[i++]);
+  while(j<a2.length) merged.push(a2[j++]);
+  steps.push({html:ds('Merged ✅',`[${merged.join(', ')}]`,C.dp)+msg(`✅ Done! Result: <strong style="color:${C.dp}">[${merged.join(', ')}]</strong>`)});
+  return steps;
+}
+function buildTrackStarsSteps(){
+  const nodes=[1,2,3,4,'↩2']; const steps=[];
+  const positions=[
+    {slow:0,fast:0,note:'Both start at head (node 1).'},
+    {slow:1,fast:2,note:'slow→node 2. fast→node 3.'},
+    {slow:2,fast:4,note:'slow→node 3. fast→node 2 (cycled).'},
+    {slow:3,fast:3,note:'slow→node 4. fast→node 4. Meeting... one more step.'},
+    {slow:4,fast:4,note:'Both at node 2 (cycle). THEY MEET! Cycle detected!',meet:true}
+  ];
+  for(const pos of positions){
+    const row=`<div style="display:flex;align-items:center;gap:0;flex-wrap:wrap;justify-content:center">`+
+      nodes.map((n,i)=>`<div style="display:flex;align-items:center"><div class="arr-cell"><div class="arr-ptr" style="color:${i===pos.slow&&i===pos.fast?C.hash:i===pos.slow?C.dp:i===pos.fast?C.ptr:'transparent'};height:18px;font-size:0.6rem">${i===pos.slow&&i===pos.fast?'S+F':i===pos.slow?'slow':i===pos.fast?'fast':''}</div><div class="arr-box" style="background:${pos.meet&&i===pos.fast?C.warn:i===pos.slow&&i===pos.fast?C.hi:i===pos.slow?C.ok:i===pos.fast?C.blue:C.surface};border-color:${pos.meet?C.back:i===pos.slow?C.dp:i===pos.fast?C.ptr:C.border2};width:44px;height:44px">${n}</div></div>${i<nodes.length-1?`<div style="color:${C.muted};padding-top:18px">→</div>`:''}</div>`).join('')+`</div>`;
+    steps.push({html:row+msg(`🏃 ${pos.note}${pos.meet?`<br><strong style="color:${C.dp}">✅ Floyd's algorithm: cycle confirmed!</strong>`:''}`)});
+  }
+  return steps;
+}
+
+// ============================================================
+//   SLIDING WINDOW VIZ
+// ============================================================
+let currentWinTab='picframe';
+const winDemos={};
+
+function initWinViz(){
+  const tabs=[{id:'picframe',label:'🖼️ Picture Frame'},{id:'inchworm',label:'🐛 Inchworm'},{id:'minimalist',label:'🧳 Minimalist'}];
+  document.getElementById('win-viz-tabs').innerHTML=tabs.map(t=>`<button class="viz-tab${t.id===currentWinTab?' active':''}" onclick="switchWinTab('${t.id}')" style="${t.id===currentWinTab?'background:'+C.win+';color:#000;border-color:'+C.win:''}">${t.label}</button>`).join('');
+  winDemos.picframe=buildPicFrameSteps();
+  winDemos.inchworm=buildInchwormSteps();
+  winDemos.minimalist=buildMinimalistSteps();
+  PLAYERS['win']={steps:winDemos[currentWinTab],cur:0};
+  renderPlayer('win');
+  document.getElementById('win-next').disabled=false;
+}
+function switchWinTab(id){
+  currentWinTab=id; PLAYERS['win']={steps:winDemos[id],cur:0}; renderPlayer('win');
+  document.querySelectorAll('#win-viz-tabs .viz-tab').forEach(b=>{
+    const tid=b.getAttribute('onclick').match(/'([^']+)'/)[1];
+    b.className='viz-tab'+(tid===id?' active':'');
+    b.style=tid===id?`background:${C.win};color:#000;border-color:${C.win}`:'';
+  });
+}
+function winNav(d){ navPlayer('win',d); }
+
+function buildPicFrameSteps(){
+  const arr=[1,3,-1,-3,5,3,6,7]; const k=3; const steps=[];
+  let sum=arr.slice(0,k).reduce((a,b)=>a+b,0); let maxSum=sum;
+  steps.push({html:arrRow(arr.map((v,i)=>cellIdx(v,i,i<k?{bg:C.purple,bc:C.win,bold:true}:{})))+ds(`Window [0..${k-1}]`,`Sum=${sum} | Max=${maxSum}`,C.win)+msg(`🖼️ <strong>Picture Frame</strong> (k=${k}) — [${arr}]. Initial window: first ${k} elements.`)});
+  for(let r=k;r<arr.length;r++){
+    const l=r-k+1; sum+=arr[r]-arr[r-k]; if(sum>maxSum) maxSum=sum;
+    const cells=arr.map((v,i)=>cellIdx(v,i,i>=l&&i<=r?{bg:C.purple,bc:C.win,bold:true}:i<l?{opacity:0.4}:{}));
+    steps.push({html:arrRow(cells)+ds(`Window [${l}..${r}]`,`Sum=${sum} | Max=${maxSum}`,C.win)+msg(`Slide: add arr[${r}]=${arr[r]}, remove arr[${r-k}]=${arr[r-k]}. Sum=<strong style="color:${C.win}">${sum}</strong>${sum===maxSum?' 🏆':''}`)});
+  }
+  steps.push({html:arrRow(arr.map((v,i)=>cellIdx(v,i)))+msg(`✅ Max sum of ${k} consecutive = <strong style="color:${C.win}">${maxSum}</strong>`)});
+  return steps;
+}
+function buildInchwormSteps(){
+  const s='abcabcbb'; let L=0; const seen=new Set(); let maxLen=0; const steps=[];
+  steps.push({html:`<div style="display:flex;gap:6px;justify-content:center">${s.split('').map((c,i)=>`<div class="arr-cell"><div class="arr-ptr" style="height:18px"></div><div class="arr-box" style="width:42px;height:42px">${c}</div><div class="arr-idx">[${i}]</div></div>`).join('')}</div>`+msg(`🐛 <strong>The Inchworm</strong> — "${s}". Find longest substring without repeating chars.`)});
+  for(let R=0;R<s.length;R++){
+    while(seen.has(s[R])){seen.delete(s[L]);L++;}
+    seen.add(s[R]); maxLen=Math.max(maxLen,R-L+1);
+    const cells=s.split('').map((c,i)=>{
+      if(i>=L&&i<=R) return `<div class="arr-cell"><div class="arr-ptr" style="color:${i===L?C.dp:i===R?C.win:C.muted};height:18px;font-size:0.6rem">${i===L?'L':i===R?'R':''}</div><div class="arr-box" style="background:${C.purple};border:2px solid ${C.win};width:42px;height:42px">${c}</div><div class="arr-idx">[${i}]</div></div>`;
+      return `<div class="arr-cell"><div class="arr-ptr" style="height:18px"></div><div class="arr-box" style="width:42px;height:42px;opacity:${i<L?0.3:1}">${c}</div><div class="arr-idx">[${i}]</div></div>`;
+    }).join('');
+    steps.push({html:`<div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap">${cells}</div>`+ds(`Window "${s.slice(L,R+1)}"`,`len=${R-L+1} | Max=${maxLen}`,C.win)+msg(`R=[${R}] '${s[R]}'. Window: "<strong style="color:${C.win}">${s.slice(L,R+1)}</strong>"${R-L+1===maxLen?' 🏆 New max!':''}`)});
+  }
+  return steps;
+}
+function buildMinimalistSteps(){
+  const s='ADOBECODEBANC',t='ABC'; const steps=[];
+  const need={};for(const c of t)need[c]=(need[c]||0)+1;
+  const have={};let formed=0,L=0,minLen=Infinity,minL=0;
+  const reqCount=Object.keys(need).length;
+  steps.push({html:`<div class="ds-box" style="margin-bottom:10px"><span class="ds-label" style="color:${C.win}">S</span>${s}</div><div class="ds-box"><span class="ds-label" style="color:${C.win}">Target T</span><strong style="color:${C.win}">${t}</strong> → need: {${Object.entries(need).map(([k,v])=>`${k}:${v}`).join(',')}}</div>`+msg(`🧳 <strong>The Minimalist</strong> — Find shortest window in S containing all of T="${t}".`)});
+  for(let R=0;R<s.length;R++){
+    const c=s[R]; have[c]=(have[c]||0)+1;
+    if(need[c]&&have[c]===need[c]) formed++;
+    while(formed===reqCount&&L<=R){
+      if(R-L+1<minLen){minLen=R-L+1;minL=L;}
+      const lc=s[L]; have[lc]--;
+      if(need[lc]&&have[lc]<need[lc]){formed--;L++;break;}
+      L++;
+    }
+    const chars=s.split('').map((ch,i)=>{
+      const inW=i>=L&&i<=R;
+      return `<div class="arr-cell"><div class="arr-ptr" style="color:${i===L?C.dp:i===R?C.win:'transparent'};height:18px;font-size:0.6rem">${i===L?'L':i===R?'R':''}</div><div class="arr-box" style="width:30px;height:30px;font-size:0.8rem;background:${inW?(t.includes(ch)?'rgba(52,211,153,0.25)':C.purple):'transparent'};border:2px solid ${inW?C.win:C.border2}">${ch}</div></div>`;
+    }).join('');
+    steps.push({html:`<div style="display:flex;gap:3px;flex-wrap:wrap;justify-content:center">${chars}</div>`+ds(`Window`,`Formed ${formed}/${reqCount} | Min: ${minLen===Infinity?'∞':'"'+s.slice(minL,minL+minLen)+'"'}`,C.win)+msg(formed===reqCount?`✅ All chars! Shrinking left...`:`R=[${R}] '${c}'. Formed: ${formed}/${reqCount}.`)});
+  }
+  return steps;
+}
+
+// ============================================================
+//   BACKTRACKING VIZ
+// ============================================================
+function initBackViz(){
+  const steps=[]; const results=[];
+  steps.push({html:btHTML([],[],results)+msg(`🗺️ <strong>The Explorer</strong> — Permutations of [1,2,3]. Choose → Explore → UN-CHOOSE.`)});
+  function bt(rem,chosen){
+    if(!rem.length){
+      results.push([...chosen]);
+      steps.push({html:btHTML(chosen,rem,[...results])+msg(`✅ Found: <strong style="color:${C.back}">[${chosen.join(',')}]</strong>! Backtrack (pop ${chosen[chosen.length-1]}).`)});
+      return;
+    }
+    for(const item of rem){
+      chosen.push(item);
+      const newRem=rem.filter(x=>x!==item);
+      steps.push({html:btHTML(chosen,newRem,[...results])+msg(`CHOOSE <strong style="color:${C.back}">${item}</strong>: path=[${chosen.join(',')}], remaining=[${newRem.join(',')}].`)});
+      bt(newRem,chosen);
+      chosen.pop();
+      steps.push({html:btHTML(chosen,rem,[...results])+msg(`↩️ UNDO: remove ${item}. Back to path=[${chosen.join(',')||'∅'}].`)});
+    }
+  }
+  bt([1,2,3],[]);
+  steps.push({html:btHTML([],[],results)+msg(`✅ All ${results.length} permutations: <strong style="color:${C.back}">${results.map(r=>'['+r.join(',')+']').join(' ')}</strong>`)});
+  makePlayer('back',steps);
+  document.getElementById('back-next').disabled=false;
+}
+function btHTML(chosen,remaining,results){
+  const allPerms=[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]];
+  const foundSet=results.map(r=>r.join(','));
+  return `<div style="display:flex;flex-direction:column;align-items:center;gap:14px;width:100%">
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center">
+      ${chosen.length?chosen.map(c=>`<div class="arr-box" style="background:rgba(248,113,113,0.2);border-color:${C.back}">${c}</div>`).join(`<span style="color:var(--muted);margin:0 3px;padding-top:0px">→</span>`):'<span style="color:var(--muted);font-size:0.8rem">path empty</span>'}
+    </div>
+    <div style="display:flex;gap:7px;flex-wrap:wrap;justify-content:center">
+      ${allPerms.map(p=>`<div class="arr-box" style="width:68px;height:34px;font-size:0.7rem;background:${foundSet.includes(p.join(','))?'rgba(52,211,153,0.2)':C.surface};border-color:${foundSet.includes(p.join(','))?C.dp:C.border2}">[${p.join(',')}]</div>`).join('')}
+    </div>
+    <div class="viz-msg" style="font-size:0.75rem">Found so far: <strong style="color:${C.dp}">${results.length}/6</strong></div>
+  </div>`;
+}
+function backNav(d){ navPlayer('back',d); }
+
+// ============================================================
+//   DP VIZ
+// ============================================================
+let currentDpTab='fib1d';
+const dpDemos={};
+
+function initDpViz(){
+  const tabs=[{id:'fib1d',label:'🧠 1D DP (Fibonacci)'},{id:'lcs2d',label:'📐 2D DP (LCS)'}];
+  document.getElementById('dp-viz-tabs').innerHTML=tabs.map(t=>`<button class="viz-tab${t.id===currentDpTab?' active':''}" onclick="switchDpTab('${t.id}')" style="${t.id===currentDpTab?'background:'+C.dp+';color:#000;border-color:'+C.dp:''}">${t.label}</button>`).join('');
+  dpDemos.fib1d=buildFib1DSteps();
+  dpDemos.lcs2d=buildLCS2DSteps();
+  PLAYERS['dp']={steps:dpDemos[currentDpTab],cur:0};
+  renderPlayer('dp');
+  document.getElementById('dp-next').disabled=false;
+}
+function switchDpTab(id){
+  currentDpTab=id; PLAYERS['dp']={steps:dpDemos[id],cur:0}; renderPlayer('dp');
+  document.querySelectorAll('#dp-viz-tabs .viz-tab').forEach(b=>{
+    const tid=b.getAttribute('onclick').match(/'([^']+)'/)[1];
+    b.className='viz-tab'+(tid===id?' active':'');
+    b.style=tid===id?`background:${C.dp};color:#000;border-color:${C.dp}`:'';
+  });
+}
+function dpNav(d){ navPlayer('dp',d); }
+
+function buildFib1DSteps(){
+  const n=8; const dp=new Array(n+1).fill('?'); const steps=[];
+  steps.push({html:arrRow(dp.map((v,i)=>cellIdx(v,i)))+msg(`🧠 <strong>1D DP — Fibonacci</strong> up to n=${n}. Fill left to right. Each cell = sum of previous two.`)});
+  dp[0]=0;dp[1]=1;
+  steps.push({html:arrRow(dp.map((v,i)=>cellIdx(v,i,i<=1?{bg:'rgba(52,211,153,0.2)',bc:C.dp}:{})))+msg(`Base cases: dp[0]=0, dp[1]=1.`)});
+  for(let i=2;i<=n;i++){
+    dp[i]=dp[i-1]+dp[i-2];
+    steps.push({html:arrRow(dp.map((v,x)=>cellIdx(v===null?'?':v,x,x===i?{bg:'rgba(52,211,153,0.3)',bc:C.dp,bold:true}:x<i?{bg:'rgba(52,211,153,0.08)',bc:'rgba(52,211,153,0.3)'}:{})))+msg(`dp[${i}] = dp[${i-1}]+dp[${i-2}] = ${dp[i-1]}+${dp[i-2]} = <strong style="color:${C.dp}">${dp[i]}</strong>`)});
+  }
+  steps.push({html:arrRow(dp.map((v,i)=>cellIdx(v,i,i===n?{bg:'rgba(52,211,153,0.4)',bc:C.dp,bold:true}:{bg:'rgba(52,211,153,0.05)'})))+msg(`✅ dp[${n}] = <strong style="color:${C.dp}">${dp[n]}</strong>`)});
+  return steps;
+}
+function buildLCS2DSteps(){
+  const s1='ABCB',s2='BCB'; const m=s1.length,n=s2.length;
+  const dp=Array(m+1).fill(null).map(()=>Array(n+1).fill(0)); const steps=[];
+  steps.push({html:lcsGrid(dp,s1,s2,-1,-1)+msg(`📐 <strong>2D DP — LCS</strong> of "${s1}" and "${s2}". dp[i][j]=LCS of s1[0..i-1] and s2[0..j-1].`)});
+  for(let i=1;i<=m;i++){
+    for(let j=1;j<=n;j++){
+      dp[i][j]=s1[i-1]===s2[j-1]?dp[i-1][j-1]+1:Math.max(dp[i-1][j],dp[i][j-1]);
+      steps.push({html:lcsGrid(dp,s1,s2,i,j)+msg(s1[i-1]===s2[j-1]?`✅ '${s1[i-1]}'==='${s2[j-1]}' → dp[${i}][${j}]=dp[${i-1}][${j-1}]+1=<strong style="color:${C.dp}">${dp[i][j]}</strong>`:`'${s1[i-1]}'≠'${s2[j-1]}' → dp[${i}][${j}]=max(${dp[i-1][j]},${dp[i][j-1]})=<strong style="color:${C.dp}">${dp[i][j]}</strong>`)});
+    }
+  }
+  steps.push({html:lcsGrid(dp,s1,s2,-1,-1)+msg(`✅ LCS = dp[${m}][${n}] = <strong style="color:${C.dp}">${dp[m][n]}</strong>. LCS is "BCB".`)});
+  return steps;
+}
+function lcsGrid(dp,s1,s2,ci,cj){
+  let html=`<div style="overflow-x:auto"><table style="border-collapse:collapse;font-family:'Fira Code',monospace;font-size:0.75rem"><tr><th style="padding:5px 8px;color:var(--muted)"> </th><th style="padding:5px 8px;color:${C.dp}">ε</th>${s2.split('').map(c=>`<th style="padding:5px 8px;color:${C.dp}">${c}</th>`).join('')}</tr>`;
+  for(let i=0;i<dp.length;i++){
+    html+=`<tr><th style="padding:5px 8px;color:${C.dp}">${i===0?'ε':s1[i-1]}</th>`;
+    for(let j=0;j<dp[0].length;j++){
+      const active=i===ci&&j===cj;
+      html+=`<td style="padding:5px 8px;text-align:center;background:${active?'rgba(52,211,153,0.3)':dp[i][j]>0?'rgba(52,211,153,0.08)':C.surface};border:1px solid ${active?C.dp:C.border};color:${active?C.dp:C.heading};font-weight:${active?800:400};border-radius:4px">${dp[i][j]}</td>`;
+    }
+    html+='</tr>';
+  }
+  html+='</table></div>';
+  return html;
+}
+
+// ============================================================
+//   GREEDY VIZ
+// ============================================================
+function initGreedViz(){
+  const prices=[7,1,5,3,6,4]; const steps=[]; let minP=Infinity,maxP=0;
+  steps.push({html:arrRow(prices.map((v,i)=>cellIdx(v,i)))+msg(`🤑 <strong>The Opportunist</strong> — [${prices}]. Track min buy price. At each day: can I beat my max profit?`)});
+  for(let i=0;i<prices.length;i++){
+    const prevMax=maxP; minP=Math.min(minP,prices[i]); const profit=prices[i]-minP; maxP=Math.max(maxP,profit);
+    const isBuy=prices[i]===minP; const isBetter=maxP>prevMax;
+    const cells=prices.map((v,j)=>cellIdx(v,j,j===i?isBetter?{bg:C.ok,bc:C.ok_b,bold:true,label:'sell!',pcolor:C.ok_b}:isBuy?{bg:C.blue,bc:C.ptr,bold:true,label:'min',pcolor:C.ptr}:{bg:C.hi,bc:C.hi_b,bold:true}:j<i?{opacity:0.5}:{}));
+    steps.push({html:arrRow(cells)+ds(`Day ${i}: price=${prices[i]}`,`min=${minP} | today profit=${profit} | max profit=${maxP}`,C.greed)+msg(isBetter?`🏆 Sell at ${prices[i]}, bought at ${minP} → <strong style="color:${C.dp}">profit=${profit}</strong>! New max!`:isBuy?`📉 New min buy price: ${minP}.`:`Day ${i}: profit ${profit} ≤ ${prevMax}. No update.`)});
+  }
+  steps.push({html:arrRow(prices.map((v,i)=>cellIdx(v,i)))+msg(`✅ Max profit = <strong style="color:${C.greed}">${maxP}</strong>`)});
+  makePlayer('greed',steps);
+  document.getElementById('greed-next').disabled=false;
+}
+function greedNav(d){ navPlayer('greed',d); }
+
+// ============================================================
+//   FLOATER VIZ
+// ============================================================
+let currentFloaterTab='sort';
+const floaterDemos={};
+function initFloaterViz(){
+  const tabs=[{id:'sort',label:'🗂️ Full Sort'},{id:'heap',label:'👑 Heap (Top K=3)'}];
+  document.getElementById('floater-viz-tabs').innerHTML=tabs.map(t=>`<button class="viz-tab${t.id===currentFloaterTab?' active':''}" onclick="switchFloaterTab('${t.id}')" style="${t.id===currentFloaterTab?'background:'+C.floater+';color:#000;border-color:'+C.floater:''}">${t.label}</button>`).join('');
+  floaterDemos.sort=buildSortSteps();
+  floaterDemos.heap=buildHeapSteps();
+  PLAYERS['floater']={steps:floaterDemos[currentFloaterTab],cur:0};
+  renderPlayer('floater');
+  document.getElementById('floater-next').disabled=false;
+}
+function switchFloaterTab(id){
+  currentFloaterTab=id; PLAYERS['floater']={steps:floaterDemos[id],cur:0}; renderPlayer('floater');
+  document.querySelectorAll('#floater-viz-tabs .viz-tab').forEach(b=>{
+    const tid=b.getAttribute('onclick').match(/'([^']+)'/)[1];
+    b.className='viz-tab'+(tid===id?' active':'');
+    b.style=tid===id?`background:${C.floater};color:#000;border-color:${C.floater}`:'';
+  });
+}
+function floaterNav(d){ navPlayer('floater',d); }
+function buildSortSteps(){
+  const arr=[3,2,1,5,6,4]; const steps=[];
+  steps.push({html:arrRow(arr.map((v,i)=>cellIdx(v,i)))+msg(`🗂️ <strong>Full Sort O(n log n)</strong> — Sort every element. All ${arr.length} positions matter.`)});
+  const sorted=[...arr].sort((a,b)=>a-b);
+  steps.push({html:arrRow(sorted.map((v,i)=>cellIdx(v,i,{bg:'rgba(56,189,248,0.1)',bc:C.floater})))+msg(`Sorted: [${sorted}]. ALL n elements ordered. O(n log n).`)});
+  steps.push({html:arrRow(sorted.map((v,i)=>cellIdx(v,i,i>=sorted.length-3?{bg:'rgba(56,189,248,0.3)',bc:C.floater,bold:true}:{opacity:0.35})))+msg(`Top 3: <strong style="color:${C.floater}">[${sorted.slice(-3).join(',')}]</strong>. But we sorted ALL n=6. If only top-K needed, heap is faster.`)});
+  return steps;
+}
+function buildHeapSteps(){
+  const arr=[3,2,1,5,6,4]; const k=3; const steps=[]; let heap=[];
+  steps.push({html:arrRow(arr.map((v,i)=>cellIdx(v,i)))+msg(`👑 <strong>Min-Heap of size K=${k}, O(n log k)</strong> — Only track top ${k}. Heap never grows beyond K.`)});
+  for(let i=0;i<arr.length;i++){
+    heap.push(arr[i]); heap.sort((a,b)=>a-b);
+    if(heap.length>k) heap.shift();
+    const cells=arr.map((v,j)=>cellIdx(v,j,j===i?{bg:C.hi,bc:C.hi_b,bold:true}:j<i?{opacity:0.4}:{}));
+    steps.push({html:arrRow(cells)+ds(`Min-Heap (size≤${k})`,heap.join(' < '),C.heap)+msg(`Add ${arr[i]}. Heap: [${heap.join(',')}]${heap.length===k&&arr[i]===heap[0]?' — smallest, but kept (size=K)':''}`)});
+  }
+  steps.push({html:arrRow(arr.map((v,i)=>cellIdx(v,i,heap.includes(v)?{bg:'rgba(251,146,60,0.25)',bc:C.heap,bold:true}:{opacity:0.3})))+msg(`✅ Top ${k}: <strong style="color:${C.heap}">[${heap.join(',')}]</strong>. O(n log k) vs O(n log n) — much faster when k << n.`)});
+  return steps;
+}
+
+// ============================================================
+//   ISLAND VISUALIZATIONS
+// ============================================================
+const islandDemos={};
+
+function switchIslandTab(id, subId, btn, color){
+  if(!islandDemos[id]) return;
+  PLAYERS[id]={steps:islandDemos[id][subId],cur:0};
+  renderPlayer(id);
+  const tabs=btn.parentElement.querySelectorAll('.viz-tab');
+  tabs.forEach(b=>{b.className='viz-tab';b.style='';});
+  btn.className='viz-tab active'; btn.style=`background:${color};color:#000;border-color:${color}`;
+}
+function islandNav(id,d){ navPlayer(id,d); }
+
+// ---- LINKED LIST ----
+function initLLViz(){
+  const tabs=[{id:'reverse',label:'🔄 Reverse'},{id:'middle',label:'🎯 Find Middle'}];
+  document.getElementById('ll-viz-tabs').innerHTML=tabs.map((t,idx)=>`<button class="viz-tab${idx===0?' active':''}" onclick="switchIslandTab('ll','${t.id}',this,'${C.ll}')" style="${idx===0?'background:'+C.ll+';color:#000;border-color:'+C.ll:''}">${t.label}</button>`).join('');
+  islandDemos['ll']={reverse:buildLLReverseSteps(),middle:buildLLMiddleSteps()};
+  PLAYERS['ll']={steps:islandDemos['ll'].reverse,cur:0};
+  renderPlayer('ll');
+  document.getElementById('ll-next').disabled=false;
+}
+function llRow(arr,ptrs){
+  return `<div style="display:flex;align-items:center;flex-wrap:wrap;justify-content:center">`+
+    arr.map((v,i)=>`<div style="display:flex;align-items:center"><div class="arr-cell"><div class="arr-ptr" style="color:${i===ptrs.curr?C.ll:i===ptrs.prev?C.dp:i===ptrs.next?C.hash:'transparent'};height:18px;font-size:0.6rem">${i===ptrs.curr?'curr':i===ptrs.prev?'prev':i===ptrs.next?'next':''}</div><div class="arr-box" style="background:${i===ptrs.curr?'rgba(232,121,249,0.2)':i===ptrs.prev?'rgba(52,211,153,0.2)':i===ptrs.next?'rgba(251,191,36,0.15)':''};border-color:${i===ptrs.curr?C.ll:i===ptrs.prev?C.dp:C.border2};width:44px;height:44px">${v}</div></div>${i<arr.length-1?`<div style="color:var(--muted);padding-top:18px">→</div>`:`<div style="color:var(--muted);padding-top:18px;font-size:0.75rem">→null</div>`}</div>`).join('')+`</div>`;
+}
+function buildLLReverseSteps(){
+  const arr=[1,2,3,4,5]; const steps=[];
+  steps.push({html:llRow(arr,{})+msg(`🔄 <strong>Reverse Linked List</strong> — 1→2→3→4→5→null<br>Three pointers: prev=null, curr=head, save next each iteration.`)});
+  const a=[...arr]; let prev=-1,curr=0;
+  for(let step=0;step<5;step++){
+    const nxt=curr<a.length-1?curr+1:-1;
+    steps.push({html:llRow(a,{prev:prev>=0?prev:-99,curr,next:nxt>=0?nxt:-99})+msg(`curr=${a[curr]}. Save next=${nxt>=0?a[nxt]:'null'}. Flip arrow: curr→prev. Advance: prev=curr, curr=next.`)});
+    prev=curr; curr=nxt;
+    if(curr===-1){
+      steps.push({html:llRow([...a].reverse(),{})+msg(`✅ Reversed! New head = prev (node ${a[a.length-1]}). List: ${[...a].reverse().join('→')}.`)});
+      break;
+    }
+  }
+  return steps;
+}
+function buildLLMiddleSteps(){
+  const arr=[1,2,3,4,5]; let slow=0,fast=0; const steps=[];
+  steps.push({html:llRow(arr,{curr:0,next:0})+msg(`🎯 <strong>Find Middle — Fast/Slow</strong> — slow moves +1, fast moves +2. When fast ends, slow = middle.`)});
+  while(fast<arr.length-1&&fast+1<arr.length-1){
+    const newSlow=slow+1; const newFast=Math.min(fast+2,arr.length-1);
+    slow=newSlow; fast=newFast;
+    steps.push({html:llRow(arr,{curr:slow,next:fast})+msg(`slow=[${slow}]=${arr[slow]}, fast=[${fast}]=${arr[fast]}. fast not at end yet.`)});
+  }
+  steps.push({html:llRow(arr,{curr:Math.floor(arr.length/2)})+msg(`✅ fast at end. slow=[${Math.floor(arr.length/2)}] = <strong style="color:${C.ll}">${arr[Math.floor(arr.length/2)]}</strong> is the middle!`)});
+  return steps;
+}
+
+// ---- TREES ----
+function initTreesViz(){
+  const tabs=[{id:'dfs',label:'🌳 DFS'},{id:'bfs',label:'📊 BFS'}];
+  document.getElementById('trees-viz-tabs').innerHTML=tabs.map((t,idx)=>`<button class="viz-tab${idx===0?' active':''}" onclick="switchIslandTab('trees','${t.id}',this,'${C.tree}')" style="${idx===0?'background:'+C.tree+';color:#000;border-color:'+C.tree:''}">${t.label}</button>`).join('');
+  islandDemos['trees']={dfs:buildDFSSteps(),bfs:buildBFSSteps()};
+  PLAYERS['trees']={steps:islandDemos['trees'].dfs,cur:0};
+  renderPlayer('trees');
+  document.getElementById('trees-next').disabled=false;
+}
+function treeViz(highlighted,orderedIds,color){
+  const nodes=[{id:'r',v:4,x:200,y:25},{id:'l',v:2,x:100,y:95},{id:'rr',v:7,x:300,y:95},{id:'ll',v:1,x:50,y:165},{id:'lr',v:3,x:150,y:165},{id:'rl',v:6,x:250,y:165},{id:'rrl',v:9,x:350,y:165}];
+  const edges=[['r','l'],['r','rr'],['l','ll'],['l','lr'],['rr','rl'],['rr','rrl']];
+  const nm=Object.fromEntries(nodes.map(n=>[n.id,n]));
+  return `<svg width="420" height="210" viewBox="0 0 420 210" style="display:block;margin:0 auto;overflow:visible">
+    ${edges.map(([a,b])=>`<line x1="${nm[a].x}" y1="${nm[a].y+18}" x2="${nm[b].x}" y2="${nm[b].y}" stroke="${C.border2}" stroke-width="2"/>`).join('')}
+    ${nodes.map(n=>{
+      const hi=highlighted.includes(n.id); const ord=orderedIds.indexOf(n.id);
+      return `<circle cx="${n.x}" cy="${n.y}" r="18" fill="${hi?'rgba(134,239,172,0.3)':C.surface}" stroke="${hi?color||C.tree:C.border2}" stroke-width="${hi?3:2}"/>
+        <text x="${n.x}" y="${n.y}" dominant-baseline="middle" text-anchor="middle" fill="${hi?color||C.tree:C.heading}" font-family="'Fira Code',monospace" font-size="13" font-weight="${hi?800:400}">${n.v}</text>
+        ${ord>=0?`<text x="${n.x+16}" y="${n.y-16}" fill="${C.hash}" font-size="10" font-family="'Fira Code',monospace">${ord+1}</text>`:''}`;
+    }).join('')}
+  </svg>`;
+}
+function buildDFSSteps(){
+  const order=['r','l','ll','lr','rr','rl','rrl'];
+  const vals=[4,2,1,3,7,6,9];
+  const steps=[{html:treeViz([],[],C.tree)+msg(`🌳 <strong>DFS — Depth First</strong>. Go deep first (left subtree, then right). Pre-order: root→left→right.`)}];
+  for(let i=1;i<=order.length;i++){
+    steps.push({html:treeViz(order.slice(0,i),order.slice(0,i),C.tree)+msg(`Visit <strong style="color:${C.tree}">${vals[i-1]}</strong>. DFS order so far: ${vals.slice(0,i).join(' → ')}`)});
+  }
+  return steps;
+}
+function buildBFSSteps(){
+  const levels=[['r'],['l','rr'],['ll','lr','rl','rrl']];
+  const vals=[[4],[2,7],[1,3,6,9]];
+  const steps=[{html:treeViz([],[],C.tree)+msg(`📊 <strong>BFS — Level Order</strong>. Visit all nodes at depth 0, then depth 1, etc. Uses a Queue.`)}];
+  const visited=[];
+  for(let l=0;l<levels.length;l++){
+    levels[l].forEach(id=>visited.push(id));
+    steps.push({html:treeViz(visited,visited,C.floater)+msg(`Level ${l}: [${vals[l].join(', ')}]. Enqueue all, process left to right.`)});
+  }
+  return steps;
+}
+
+// ---- TRIES ----
+function initTriesViz(){
+  islandDemos['tries']={main:buildTriesSteps()};
+  PLAYERS['tries']={steps:islandDemos['tries'].main,cur:0};
+  renderPlayer('tries');
+  document.getElementById('tries-next').disabled=false;
+}
+function buildTriesSteps(){
+  const words=['cat','car','dog']; const steps=[]; const trie={};
+  steps.push({html:trieViz(trie,'',C.trie)+msg(`📖 <strong>The Librarian — Trie</strong>. Insert: ${words.map(w=>'"'+w+'"').join(', ')}. Shared prefixes share nodes.`)});
+  for(const word of words){
+    let node=trie;
+    for(let i=0;i<word.length;i++){
+      if(!node[word[i]]) node[word[i]]={};
+      node=node[word[i]];
+      steps.push({html:trieViz(trie,word.slice(0,i+1),C.trie)+msg(`Inserting "<strong style="color:${C.trie}">${word}</strong>": char '${word[i]}' at depth ${i+1}.${i===0&&node===trie[word[0]]?' Root level.':''} Path: ${word.slice(0,i+1).split('').join('→')}`)});
+    }
+    node.isEnd=true;
+    steps.push({html:trieViz(trie,word,C.trie)+msg(`✅ "<strong style="color:${C.trie}">${word}</strong>" fully inserted. Endpoint marked.`)});
+  }
+  return steps;
+}
+function collectWords(node, prefix, result){
+  if(node.isEnd) result.push(prefix);
+  for(const [k,v] of Object.entries(node)){if(k!=='isEnd')collectWords(v,prefix+k,result);}
+}
+function trieViz(trie,activePath,color){
+  const inserted=[]; collectWords(trie,'',inserted);
+  function renderNode(node, prefix, depth){
+    const keys=Object.keys(node).filter(k=>k!=='isEnd');
+    if(keys.length===0) return '';
+    return keys.map(k=>{
+      const full=prefix+k;
+      const isActive=activePath.startsWith(full);
+      const isEnd=node[k].isEnd;
+      const children=renderNode(node[k],full,depth+1);
+      return `<div style="display:inline-flex;flex-direction:column;align-items:center;margin:0 4px">
+        <div style="width:2px;height:14px;background:${isActive?color:C.border2}"></div>
+        <div style="width:30px;height:30px;border-radius:50%;border:2px solid ${isActive?color:C.border2};background:${isActive?'rgba(34,211,238,0.2)':isEnd?'rgba(34,211,238,0.08)':C.surface};display:flex;align-items:center;justify-content:center;font-family:'Fira Code',monospace;font-size:0.8rem;color:${isActive?color:C.heading};font-weight:${isActive?800:400};position:relative">
+          ${k}${isEnd?`<div style="position:absolute;top:-4px;right:-4px;width:8px;height:8px;border-radius:50%;background:${color}"></div>`:''}
+        </div>
+        ${children?`<div style="display:flex">${children}</div>`:''}
+      </div>`;
+    }).join('');
+  }
+  return `<div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+    <div style="font-size:0.75rem;color:var(--muted);margin-bottom:4px">◯ root</div>
+    <div style="display:flex">${renderNode(trie,'',0)}</div>
+    <div class="ds-box" style="margin-top:8px"><span class="ds-label" style="color:${color}">Words Inserted</span>${['cat','car','dog'].map(w=>`<span class="kw" style="margin:2px;${inserted.includes(w)?'background:rgba(34,211,238,0.15);border-color:'+color+';color:'+color:''}">${w}</span>`).join('')}</div>
+  </div>`;
+}
+
+// ---- STACK ----
+function initStackViz(){
+  islandDemos['stack']={main:buildStackSteps()};
+  PLAYERS['stack']={steps:islandDemos['stack'].main,cur:0};
+  renderPlayer('stack');
+  document.getElementById('stack-next').disabled=false;
+}
+function buildStackSteps(){
+  const s='({[]})'; const steps=[]; const stack=[]; const matches={'(':')','{':'}','[':']'};
+  steps.push({html:stackViz(s,0,stack,'')+msg(`🥞 <strong>The Plate Stacker</strong> — Valid Parentheses: "${s}". Push opens, pop+match closes.`)});
+  for(let i=0;i<s.length;i++){
+    const c=s[i];
+    if('({['.includes(c)){
+      stack.push(c);
+      steps.push({html:stackViz(s,i+1,stack,'push')+msg(`'${c}' is opening → <strong style="color:${C.dp}">PUSH</strong> onto stack. Stack: [${stack.join(', ')}]`)});
+    } else {
+      const top=stack[stack.length-1];
+      const ok=matches[top]===c;
+      steps.push({html:stackViz(s,i+1,stack.slice(0,-1),ok?'match':'mismatch',ok?c:null)+msg(ok?`'${c}' is closing → POP '${top}'. <strong style="color:${C.dp}">✅ Matches!</strong> Stack: [${stack.slice(0,-1).join(', ')||'empty'}]`:`'${c}' does NOT match top '${top}' → <strong style="color:${C.back}">❌ INVALID</strong>`)});
+      if(!ok) break;
+      stack.pop();
+    }
+  }
+  if(stack.length===0) steps.push({html:stackViz(s,s.length,stack,'done')+msg(`✅ <strong style="color:${C.dp}">VALID!</strong> Stack is empty. All brackets matched.`)});
+  return steps;
+}
+function stackViz(s,pos,stack,action,matched){
+  const chars=s.split('').map((c,i)=>`<div class="arr-box" style="width:38px;height:38px;font-size:1rem;background:${i<pos?C.ok:i===pos-1?action==='push'?C.blue:action==='match'?C.ok:C.warn:C.surface};border-color:${i<pos?C.ok_b:i===pos-1?action==='push'?C.ptr:action==='match'?C.ok_b:C.back:C.border2}">${c}</div>`).join('');
+  const stackDisplay=stack.length?stack.map(c=>`<div class="arr-box" style="width:38px;height:38px;border-color:${C.stack};background:rgba(253,164,175,0.15)">${c}</div>`).join(''):`<span style="color:var(--muted);font-size:0.8rem">empty</span>`;
+  return `<div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+    <div style="display:flex;gap:4px">${chars}</div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+      <div style="font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em">Stack (top→)</div>
+      <div style="display:flex;gap:4px;align-items:center">${stackDisplay}</div>
+    </div>
+  </div>`;
+}
+
+// ---- BINARY SEARCH ----
+function initBSViz(){
+  const tabs=[{id:'classic',label:'✂️ Classic'},{id:'answer',label:'🎯 Answer Space'}];
+  document.getElementById('bs-viz-tabs').innerHTML=tabs.map((t,idx)=>`<button class="viz-tab${idx===0?' active':''}" onclick="switchIslandTab('bs','${t.id}',this,'${C.bsearch}')" style="${idx===0?'background:'+C.bsearch+';color:#000;border-color:'+C.bsearch:''}">${t.label}</button>`).join('');
+  islandDemos['bs']={classic:buildBSClassicSteps(),answer:buildBSAnswerSteps()};
+  PLAYERS['bs']={steps:islandDemos['bs'].classic,cur:0};
+  renderPlayer('bs');
+  document.getElementById('bs-next').disabled=false;
+}
+function buildBSClassicSteps(){
+  const arr=[-1,0,3,5,9,12]; const target=9; let L=0,R=arr.length-1; const steps=[];
+  steps.push({html:arrRow(arr.map((v,i)=>cellIdx(v,i)))+msg(`✂️ <strong>The Halver</strong> — Sorted: [${arr}], find target=${target}. Each step eliminates HALF.`)});
+  while(L<=R){
+    const mid=Math.floor((L+R)/2);
+    const cells=arr.map((v,i)=>cellIdx(v,i,i===mid?{bg:C.hi,bc:C.hi_b,bold:true,ptr:'mid',pcolor:C.hash}:i===L?{bg:C.blue,bc:C.ptr,bold:true,ptr:'L',pcolor:C.ptr}:i===R?{bg:C.warn,bc:C.warn_b,bold:true,ptr:'R',pcolor:C.back}:i<L||i>R?{opacity:0.25}:{}));
+    if(arr[mid]===target){
+      const done=arr.map((v,i)=>cellIdx(v,i,i===mid?{bg:C.ok,bc:C.ok_b,bold:true}:i<L||i>R?{opacity:0.25}:{}));
+      steps.push({html:arrRow(done)+msg(`✅ <strong style="color:${C.dp}">Found!</strong> arr[${mid}]=${arr[mid]}=target. Return ${mid}.`)}); break;
+    } else if(arr[mid]<target){
+      steps.push({html:arrRow(cells)+msg(`arr[${mid}]=${arr[mid]} < ${target}. Target is in right half → L = mid+1 = ${mid+1}.`)});
+      L=mid+1;
+    } else {
+      steps.push({html:arrRow(cells)+msg(`arr[${mid}]=${arr[mid]} > ${target}. Target is in left half → R = mid-1 = ${mid-1}.`)});
+      R=mid-1;
+    }
+  }
+  return steps;
+}
+function buildBSAnswerSteps(){
+  // Koko eating bananas: [3,6,7,11], h=8, find min speed
+  const piles=[3,6,7,11]; 
+  const h=8; 
+  let lo=1, hi=11; 
+  const steps=[];
+  
+  function canFinish(speed){
+    return piles.reduce((sum,p) => sum + Math.ceil(p/speed), 0) <= h;
+  }
+  
+  steps.push({
+    html: arrRow(piles.map((v,i) => cellIdx(v,i))) 
+          + ds('Answer Space', `lo=${lo}, hi=${hi}`, C.bsearch) 
+          + msg(`🎯 <strong>The Condition Binarizer</strong> — Koko Eating Bananas: piles=[${piles}], h=${h} hours. Find MINIMUM speed.<br>Binary search on the ANSWER (speed), not the array!`)
+  });
+  
+  while(lo < hi) {
+    const mid = Math.floor((lo+hi)/2); 
+    const ok = canFinish(mid);
+    const hours = piles.reduce((sum,p) => sum + Math.ceil(p/mid), 0);
+    
+    // Extract the conditional string to avoid nested backticks
+    const statusMsg = ok ? `✅ Yes! → Try smaller: hi=mid=${mid}` : `❌ No! → Need faster: lo=mid+1=${mid+1}`;
+    
+    steps.push({
+      html: arrRow(piles.map((v,i) => cellIdx(v,i,{bg:'rgba(253,230,138,0.1)',bc:C.bsearch}))) 
+            + ds('Answer Space', `lo=${lo}, hi=${hi}, mid=${mid}`, C.bsearch) 
+            + msg(`Try speed=<strong style="color:${C.bsearch}">${mid}</strong>. Would take <strong>${hours}</strong> hours (h≤${h}?). ${statusMsg}`)
+    });
+    
+    if(ok) {
+      hi = mid; 
+    } else {
+      lo = mid + 1;
+    }
+  }
+  
+  steps.push({
+    html: arrRow(piles.map((v,i) => cellIdx(v,i,{bg:C.ok,bc:C.ok_b}))) 
+          + msg(`✅ Minimum speed = <strong style="color:${C.bsearch}">${lo}</strong>. Binary search on answer space gives O(n log max_pile).`)
+  });
+  
+  return steps;
+}
+
+// ---- GRAPHS ----
+function initGraphViz(){
+  const tabs=[{id:'bfs',label:'🧭 BFS (Shortest Path)'},{id:'dfs',label:'🌊 DFS (Islands)'}];
+  document.getElementById('graph-viz-tabs').innerHTML=tabs.map((t,idx)=>`<button class="viz-tab${idx===0?' active':''}" onclick="switchIslandTab('graph','${t.id}',this,'${C.graph}')" style="${idx===0?'background:'+C.graph+';color:#000;border-color:'+C.graph:''}">${t.label}</button>`).join('');
+  islandDemos['graph']={bfs:buildGraphBFSSteps(),dfs:buildGraphDFSSteps()};
+  PLAYERS['graph']={steps:islandDemos['graph'].bfs,cur:0};
+  renderPlayer('graph');
+  document.getElementById('graph-next').disabled=false;
+}
+function graphSVG(nodes,edges,visited,current,distances,color){
+  const nMap=Object.fromEntries(nodes.map(n=>[n.id,n]));
+  return `<svg width="380" height="220" viewBox="0 0 380 220" style="display:block;margin:0 auto">
+    ${edges.map(([a,b])=>`<line x1="${nMap[a].x}" y1="${nMap[a].y}" x2="${nMap[b].x}" y2="${nMap[b].y}" stroke="${C.border2}" stroke-width="2"/>`).join('')}
+    ${nodes.map(n=>{
+      const isV=visited.includes(n.id); const isC=current===n.id; const d=distances[n.id];
+      return `<circle cx="${n.x}" cy="${n.y}" r="20" fill="${isC?'rgba(110,231,183,0.4)':isV?'rgba(110,231,183,0.15)':C.surface}" stroke="${isC?color:isV?C.graph:C.border2}" stroke-width="${isC?3:2}"/>
+        <text x="${n.x}" y="${n.y}" dominant-baseline="middle" text-anchor="middle" fill="${isV?C.graph:C.heading}" font-family="'Fira Code',monospace" font-size="13" font-weight="${isC?800:400}">${n.v}</text>
+        ${d!==undefined?`<text x="${n.x+16}" y="${n.y-16}" fill="${C.hash}" font-size="10" font-family="'Fira Code',monospace">d=${d}</text>`:''}`;
+    }).join('')}
+  </svg>`;
+}
+function buildGraphBFSSteps(){
+  const nodes=[{id:'A',v:'A',x:190,y:30},{id:'B',v:'B',x:90,y:100},{id:'C',v:'C',x:290,y:100},{id:'D',v:'D',x:50,y:185},{id:'E',v:'E',x:140,y:185},{id:'F',v:'F',x:290,y:185}];
+  const edges=[['A','B'],['A','C'],['B','D'],['B','E'],['C','F']];
+  const adj={A:['B','C'],B:['A','D','E'],C:['A','F'],D:['B'],E:['B'],F:['C']};
+  const steps=[{html:graphSVG(nodes,edges,[],null,{},C.graph)+msg(`🧭 <strong>The Navigator (BFS)</strong> — Find shortest path from A to every node.<br>BFS explores level by level → guarantees shortest path in unweighted graphs.`)}];
+  const dist={A:0}; const visited=['A']; const queue=['A'];
+  steps.push({html:graphSVG(nodes,edges,visited,'A',dist,C.graph)+ds('Queue','[A]',C.graph)+msg(`Start at A (dist=0). Enqueue A.`)});
+  while(queue.length){
+    const node=queue.shift();
+    for(const nb of adj[node]){
+      if(dist[nb]===undefined){
+        dist[nb]=dist[node]+1; visited.push(nb); queue.push(nb);
+        steps.push({html:graphSVG(nodes,edges,visited,nb,dist,C.graph)+ds('Queue','['+queue.join(',')+']',C.graph)+msg(`BFS: ${node}→<strong style="color:${C.graph}">${nb}</strong>. dist[${nb}]=<strong style="color:${C.graph}">${dist[nb]}</strong>. Enqueue ${nb}.`)});
+      }
+    }
+  }
+  steps.push({html:graphSVG(nodes,edges,visited,null,dist,C.graph)+msg(`✅ Shortest distances from A: ${Object.entries(dist).map(([k,v])=>`${k}=${v}`).join(', ')}.`)});
+  return steps;
+}
+function buildGraphDFSSteps(){
+  const grid=[['1','1','0','0'],['1','1','0','0'],['0','0','1','0'],['0','0','0','1']];
+  const rows=grid.length,cols=grid[0].length; const steps=[]; let islands=0;
+  const visited=grid.map(r=>r.map(()=>false));
+  function gridHTML(vis,currentR,currentC){
+    let html=`<div style="display:flex;flex-direction:column;gap:3px;align-items:center">`;
+    for(let r=0;r<rows;r++){
+      html+=`<div style="display:flex;gap:3px">`;
+      for(let c=0;c<cols;c++){
+        const isL=grid[r][c]==='1'; const isV=vis[r][c]; const isCur=r===currentR&&c===currentC;
+        html+=`<div style="width:44px;height:44px;border:2px solid ${isCur?C.graph:isV&&isL?C.graph:isL?C.border2:'rgba(255,255,255,0.05)'};border-radius:6px;background:${isCur?'rgba(110,231,183,0.4)':isV&&isL?'rgba(110,231,183,0.15)':isL?'rgba(16,185,129,0.08)':'transparent'};display:flex;align-items:center;justify-content:center;font-family:'Fira Code',monospace;font-size:0.9rem;color:${isL?C.graph:C.muted}">${grid[r][c]}</div>`;
+      }
+      html+=`</div>`;
+    }
+    html+=`</div>`;
+    return html;
+  }
+  steps.push({html:gridHTML(visited,-1,-1)+msg(`🌊 <strong>The Flood Filler (DFS)</strong> — Count islands (groups of 1s). Click a '1' → flood fill all connected 1s → count +1.`)});
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<cols;c++){
+      if(grid[r][c]==='1'&&!visited[r][c]){
+        islands++;
+        const toVisit=[[r,c]]; const toFlood=[];
+        while(toVisit.length){
+          const [cr,cc]=toVisit.pop();
+          if(cr<0||cr>=rows||cc<0||cc>=cols||grid[cr][cc]==='0'||visited[cr][cc]) continue;
+          visited[cr][cc]=true; toFlood.push([cr,cc]);
+          toVisit.push([cr+1,cc],[cr-1,cc],[cr,cc+1],[cr,cc-1]);
+          steps.push({html:gridHTML(visited,cr,cc)+msg(`DFS flood-fill from (${r},${c}). Visiting (${cr},${cc}). Island #${islands} growing...`)});
+        }
+        steps.push({html:gridHTML(visited,-1,-1)+msg(`✅ Island #${islands} fully marked. Total islands so far: <strong style="color:${C.graph}">${islands}</strong>`)});
+      }
+    }
+  }
+  steps.push({html:gridHTML(visited,-1,-1)+msg(`✅ Done! Total islands = <strong style="color:${C.graph}">${islands}</strong>`)});
+  return steps;
+}
+
+// ---- INTERVALS ----
+function initIntervalViz(){
+  islandDemos['interval']={main:buildIntervalSteps()};
+  PLAYERS['interval']={steps:islandDemos['interval'].main,cur:0};
+  renderPlayer('interval');
+  document.getElementById('interval-next').disabled=false;
+}
+function buildIntervalSteps(){
+  const intervals=[[1,3],[2,6],[8,10],[15,18]]; const steps=[]; const merged=[];
+  function intervalBar(ivals, highlightIdx, mergedList){
+    const maxVal=20; const W=380; const scale=v=>(v/maxVal)*W;
+    let html=`<div style="position:relative;width:380px;margin:0 auto">`;
+    ivals.forEach(([s,e],i)=>{
+      const isH=i===highlightIdx; const top=16+i*28;
+      html+=`<div style="position:absolute;left:${scale(s)}px;top:${top}px;width:${scale(e-s)}px;height:20px;background:${isH?'rgba(254,215,170,0.5)':'rgba(254,215,170,0.2)'};border:2px solid ${isH?C.interval:C.border2};border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Fira Code',monospace;font-size:0.65rem;color:${C.heading}">[${s},${e}]</div>`;
+    });
+    const mergedY=16+ivals.length*28+16;
+    html+=`<div style="position:absolute;top:${mergedY}px;left:0;font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em">merged</div>`;
+    mergedList.forEach(([s,e],i)=>{
+      html+=`<div style="position:absolute;left:${scale(s)}px;top:${mergedY+14}px;width:${Math.max(scale(e-s),2)}px;height:20px;background:rgba(254,215,170,0.35);border:2px solid ${C.interval};border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Fira Code',monospace;font-size:0.65rem;color:${C.interval}">[${s},${e}]</div>`;
+    });
+    const totalH=mergedY+40;
+    html+=`<svg width="380" height="16" style="position:absolute;top:0;left:0"><line x1="0" y1="8" x2="380" y2="8" stroke="${C.border}" stroke-width="1"/>${[0,5,10,15,20].map(v=>`<text x="${scale(v)}" y="14" font-size="9" fill="${C.muted}" font-family="'Fira Code',monospace" text-anchor="middle">${v}</text>`).join('')}</svg>`;
+    html+=`</div><div style="height:${totalH}px"></div>`;
+    return html;
+  }
+  intervals.sort((a,b)=>a[0]-b[0]);
+  steps.push({html:intervalBar(intervals,-1,merged)+msg(`📅 <strong>The Scheduler</strong> — Merge [[1,3],[2,6],[8,10],[15,18]]. First sort by start time.`)});
+  merged.push([...intervals[0]]);
+  steps.push({html:intervalBar(intervals,0,merged.map(x=>[...x]))+msg(`Initialize with first interval [${intervals[0]}].`)});
+  for(let i=1;i<intervals.length;i++){
+    const [s,e]=intervals[i]; const prev=merged[merged.length-1];
+    if(s<=prev[1]){
+      prev[1]=Math.max(prev[1],e);
+      steps.push({html:intervalBar(intervals,i,merged.map(x=>[...x]))+msg(`[${s},${e}] overlaps prev [${prev[0]},${prev[1]>e?prev[1]:e}] (start ${s} ≤ prev.end ${prev[1]>e?prev[1]:e}). <strong style="color:${C.dp}">Merge!</strong> new end = max.`)});
+    } else {
+      merged.push([s,e]);
+      steps.push({html:intervalBar(intervals,i,merged.map(x=>[...x]))+msg(`[${s},${e}] does NOT overlap prev (start ${s} > prev.end ${prev[1]}). <strong style="color:${C.interval}">New interval.</strong>`)});
+    }
+  }
+  steps.push({html:intervalBar(intervals,-1,merged)+msg(`✅ Merged: <strong style="color:${C.interval}">${merged.map(x=>'['+x.join(',')+']').join(', ')}</strong>`)});
+  return steps;
+}
+
+// ---- BITS ----
+function initBitsViz(){
+  const tabs=[{id:'bits',label:'💻 Bit Tricks'},{id:'matrix',label:'📐 Matrix Rotate'}];
+  document.getElementById('bits-viz-tabs').innerHTML=tabs.map((t,idx)=>`<button class="viz-tab${idx===0?' active':''}" onclick="switchIslandTab('bits','${t.id}',this,'${C.bits}')" style="${idx===0?'background:'+C.bits+';color:#000;border-color:'+C.bits:''}">${t.label}</button>`).join('');
+  islandDemos['bits']={bits:buildBitTrickSteps(),matrix:buildMatrixRotateSteps()};
+  PLAYERS['bits']={steps:islandDemos['bits'].bits,cur:0};
+  renderPlayer('bits');
+  document.getElementById('bits-next').disabled=false;
+}
+function binStr(n,len=8){return n.toString(2).padStart(len,'0')}
+function buildBitTrickSteps(){
+  const nums=[12,9]; const steps=[];
+  steps.push({html:ds('n & (n-1) trick','Removes the lowest set bit each time',C.bits)+msg(`💻 <strong>The Hacker</strong> — Count set bits using n&(n-1).<br>Each operation removes exactly one '1' bit. Count = number of operations until n=0.`)});
+  for(const num of nums){
+    let n=num; let count=0;
+    steps.push({html:`<div class="ds-box"><span class="ds-label" style="color:${C.bits}">n = ${num}</span><span style="font-family:'Fira Code',monospace;font-size:1.1rem;color:${C.bits}">${binStr(num)}</span></div>`+msg(`Start with n=<strong style="color:${C.bits}">${num}</strong> = <strong style="color:${C.bits}">${binStr(num)}</strong>. Count set bits.`)});
+    while(n){
+      const nm1=n-1; const and=n&nm1; count++;
+      steps.push({html:`<div style="display:flex;flex-direction:column;gap:6px;align-items:center"><div class="ds-box"><span class="ds-label" style="color:${C.bits}">n</span>${binStr(n)} (=${n})</div><div class="ds-box"><span class="ds-label" style="color:${C.muted}">n-1</span>${binStr(nm1)} (=${nm1})</div><div class="ds-box"><span class="ds-label" style="color:${C.dp}">n & (n-1)</span><span style="color:${C.dp}">${binStr(and)} (=${and})</span></div></div>`+msg(`Step ${count}: n=${n} & (n-1)=${nm1} = <strong style="color:${C.dp}">${and}</strong>. Bit #${count} removed!`)});
+      n=and;
+    }
+    steps.push({html:`<div class="ds-box"><span class="ds-label" style="color:${C.bits}">n = ${num}</span>Result</div>`+msg(`✅ ${num} has <strong style="color:${C.dp}">${count}</strong> set bit${count>1?'s':''}. Also: XOR trick: a^a=0, so ${num}^${num}=0. Find missing: reduce XOR over [0..n].`)});
+  }
+  return steps;
+}
+function buildMatrixRotateSteps(){
+  const mat=[[1,2,3],[4,5,6],[7,8,9]]; const n=3; const steps=[];
+  function matHTML(m, highlightI, highlightJ, label){
+    const cells=m.map((row,i)=>row.map((v,j)=>{
+      const isH=i===highlightI&&j===highlightJ;
+      return `<div style="width:44px;height:44px;border:2px solid ${isH?C.bits:C.border2};border-radius:6px;background:${isH?'rgba(191,219,254,0.25)':C.surface};display:flex;align-items:center;justify-content:center;font-family:'Fira Code',monospace;font-size:0.95rem;color:${C.heading}">${v}</div>`;
+    }).join('')).map(row=>`<div style="display:flex;gap:3px">${row}</div>`).join('');
+    return `<div style="display:flex;flex-direction:column;gap:3px;align-items:center"><div style="font-size:0.65rem;color:var(--muted);text-transform:uppercase;margin-bottom:4px">${label}</div>${cells}</div>`;
+  }
+  steps.push({html:matHTML(mat,-1,-1,'Original')+msg(`📐 <strong>The Geometry Wizard</strong> — Rotate 3×3 matrix 90° clockwise IN-PLACE.<br>Step 1: Transpose. Step 2: Reverse each row.`)});
+  // Transpose
+  const trans=mat.map(r=>[...r]);
+  for(let i=0;i<n;i++) for(let j=i+1;j<n;j++) [trans[i][j],trans[j][i]]=[trans[j][i],trans[i][j]];
+  for(let i=0;i<n;i++){
+    for(let j=i+1;j<n;j++){
+      steps.push({html:`<div style="display:flex;gap:20px;align-items:center">${matHTML(mat,i,j,'Before Transpose')}${matHTML(trans,j,i,'After Transpose')}</div>`+msg(`Transpose: swap mat[${i}][${j}] and mat[${j}][${i}]: swap ${mat[i][j]} ↔ ${mat[j][i]}`)});
+    }
+  }
+  steps.push({html:matHTML(trans,-1,-1,'Transposed')+msg(`✅ Transpose done! Now reverse each row.`)});
+  const rotated=trans.map(r=>[...r].reverse());
+  for(let i=0;i<n;i++){
+    steps.push({html:`<div style="display:flex;gap:20px;align-items:center">${matHTML(trans,i,-1,'Transposed')}${matHTML(rotated,-1,-1,'Reversed Row '+i)}</div>`+msg(`Reverse row ${i}: [${trans[i].join(',')}] → [${rotated[i].join(',')}]`)});
+  }
+  steps.push({html:matHTML(rotated,-1,-1,'Rotated 90° Clockwise ✅')+msg(`✅ Done! Original was:<br>[1,2,3],[4,5,6],[7,8,9]<br>Rotated:<br>[${rotated.map(r=>'['+r.join(',')+']').join(', ')}]`)});
+  return steps;
+}
+// ============================================================
+//   FULL VISUAL DECISION TREES
+// ============================================================
+
+    
+
+
+
+
+// ============================================================
+//   INIT ALL
+// ============================================================
+function initAllViz(){
+  initHashViz();
+  initPtrViz();
+  initWinViz();
+  initBackViz();
+  initDpViz();
+  initGreedViz();
+  initFloaterViz();
+  initLLViz();
+  initTreesViz();
+  initTriesViz();
+  initStackViz();
+  initBSViz();
+  initGraphViz();
+  initIntervalViz();
+  initBitsViz();
+}
+
+window.addEventListener('DOMContentLoaded', ()=>{
+  renderPersonas('hash-personas', HASH_PERSONAS, C.hash);
+  renderTable('hash-table', HASH_HEADERS, HASH_ROWS);
+  renderPersonas('ptr-personas', PTR_PERSONAS, C.ptr);
+  renderTable('ptr-table', PTR_HEADERS, PTR_ROWS);
+  renderPersonas('win-personas', WIN_PERSONAS, C.win);
+  renderTable('win-table', WIN_HEADERS, WIN_ROWS);
+  renderPersonas('back-personas', BACK_PERSONAS, C.back);
+  renderTable('back-table', BACK_HEADERS, BACK_ROWS);
+  renderPersonas('dp-personas', DP_PERSONAS, C.dp);
+  renderTable('dp-table-el', DP_HEADERS, DP_ROWS);
+  renderPersonas('greed-personas', GREED_PERSONAS, C.greed);
+  renderTable('greed-table', GREED_HEADERS, GREED_ROWS);
+  renderPersonas('floater-personas', SORT_PERSONAS, C.floater);
+  renderTable('floater-table', FLOATER_HEADERS, FLOATER_ROWS);
+  renderPersonas('ll-personas', LL_PERSONAS, C.ll);
+  renderTable('ll-table', LL_HEADERS, LL_ROWS);
+  renderPersonas('trees-personas', TREES_PERSONAS, C.tree);
+  renderTable('trees-table', TREES_HEADERS, TREES_ROWS);
+  renderPersonas('tries-personas', TRIES_PERSONAS, C.trie);
+  renderTable('tries-table', TRIES_HEADERS, TRIES_ROWS);
+  renderPersonas('stack-personas', STACK_PERSONAS, C.stack);
+  renderTable('stack-table', STACK_HEADERS, STACK_ROWS);
+  renderPersonas('bs-personas', BS_PERSONAS, C.bsearch);
+  renderTable('bs-table', BS_HEADERS, BS_ROWS);
+  renderPersonas('graph-personas', GRAPH_PERSONAS, C.graph);
+  renderTable('graph-table', GRAPH_HEADERS, GRAPH_ROWS);
+  renderPersonas('interval-personas', INTERVAL_PERSONAS, C.interval);
+  renderTable('interval-table', INTERVAL_HEADERS, INTERVAL_ROWS);
+  renderPersonas('bits-personas', BITS_PERSONAS, C.bits);
+  renderTable('bits-table', BITS_HEADERS, BITS_ROWS);
+
+  initAllViz();
+  
+});
+</script>
+ 
+</body>
+</html>
